@@ -1,0 +1,54 @@
+import Question from "../models/question.js";
+
+export const getQuestions = async (req, res) => {
+  try {
+    const questions = await Question.find().sort({ createdAt: -1 });
+    res.json(questions);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching questions" });
+  }
+};
+
+export const createQuestion = async (req, res) => {
+  try {
+    const { text, author } = req.body;
+    if (!text.trim())
+      return res.status(400).json({ message: "Question cannot be empty" });
+
+    const newQuestion = new Question({ text, author });
+    await newQuestion.save();
+
+    req.io.emit("newQuestion", newQuestion); // emit event using socket.io reference
+    res.status(201).json(newQuestion);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding question" });
+  }
+};
+
+export const updateQuestion = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const updated = await Question.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Question not found" });
+
+    req.io.emit("updateQuestion", updated);
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating question" });
+  }
+};
+
+export const clearQuestions = async (req, res) => {
+  try {
+    await Question.deleteMany({});
+    req.io.emit("clearQuestions");
+    res.json({ message: "All questions cleared" });
+  } catch (error) {
+    res.status(500).json({ message: "Error clearing questions" });
+  }
+};

@@ -3,7 +3,7 @@ import http from "http";
 import {Server} from "socket.io"
 import cors from "cors";
 import dotenv from "dotenv";
-
+import myRouter  from "./Routers/questionRouter.js"
 import ConnectDB  from "./db.js";
 dotenv.config();
 ConnectDB();
@@ -21,6 +21,7 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
+app.use("/questions",myRouter);
 io.on("connection",(socket)=>{
     console.log("NEW client connected",socket.id);
     socket.on("disconnect",()=>{
