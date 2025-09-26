@@ -1,2 +1,3 @@
 # VidyaVichara
-vidhyavichara project
+vidhyavichara project --
+
