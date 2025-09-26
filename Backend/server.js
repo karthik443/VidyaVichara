@@ -1,10 +1,11 @@
 import express from "express";
 import http from "http";
-import {Server} from "socket.io"
+import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
-import myRouter  from "./Routers/questionRouter.js"
-import ConnectDB  from "./db.js";
+import myRouter from "./Routers/questionRouter.js";
+import userRouter from "./Routers/userRouter.js";
+import ConnectDB from "./db.js";
 dotenv.config();
 ConnectDB();
 
@@ -21,14 +22,16 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
-app.use("/questions",myRouter);
-io.on("connection",(socket)=>{
-    console.log("NEW client connected",socket.id);
-    socket.on("disconnect",()=>{
-        console.log("Client disconnected",socket.id);
-    });
-})
-const PORT  = process.env.PORT || 5000;
-server.listen(PORT,()=>{
-    console.log("Server running on port "+ PORT);
-})
+app.use("/questions", myRouter);
+app.use("/users", userRouter);
+
+io.on("connection", (socket) => {
+  console.log("NEW client connected", socket.id);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected", socket.id);
+  });
+});
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
