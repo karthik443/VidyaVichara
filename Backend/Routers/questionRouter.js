@@ -4,6 +4,7 @@ import {
   createQuestion,
   updateQuestion,
   clearQuestions,
+  deleteQuestion
 } from "../controllers/questionController.js";
 
 const router = express.Router();
@@ -12,5 +13,6 @@ router.get("/", getQuestions);
 router.post("/", createQuestion);
 router.patch("/:id", updateQuestion);
 router.delete("/", clearQuestions);
+router.post("/delete",deleteQuestion);
 
 export default router;
