@@ -1,16 +1,20 @@
-import { timeStamp } from "console";
-import mongoose, { mongo } from "mongoose";
-const questoinSchema = new mongoose.Schema({
-    author:{type:String,default:"Anonymus"},
-    text:{type:String , required:true},
-    answer:{type:String,default:"Not Answerd"},
-    status: {
-    type: String,
-    enum: ["unanswered", "answered", "important"],
-    default: "unanswered",
-  },
-   isDeleted:{type:Boolean, default:false}
-},{timeStamp:true})
+import mongoose from "mongoose";
 
-const Question = mongoose.model("question",questoinSchema);
+const questionSchema = new mongoose.Schema(
+  {
+    author: { type: String, default: "Anonymous" },
+    text: { type: String, required: true },
+    answer: { type: String, default: "Not Answered" },
+    status: {
+      type: String,
+      enum: ["unanswered", "answered", "important"],
+      default: "unanswered",
+    },
+    isDeleted: { type: Boolean, default: false },
+  },
+  { timestamps: true } // ✅ Adds createdAt & updatedAt automatically
+);
+
+const Question = mongoose.model("Question", questionSchema);
+
 export default Question;
