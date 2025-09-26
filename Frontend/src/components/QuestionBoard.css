@@ -1,0 +1,90 @@
+.board-container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.ask-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.ask-form textarea {
+  width: 100%;
+  padding: 10px;
+  resize: vertical;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.ask-form button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4a90e2;
+  color: white;
+}
+
+.questions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.sticky-note {
+  width: 250px;
+  min-height: 120px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: rotate(-1deg); /* slight tilt for sticky look */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg);
+  box-shadow: 4px 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sticky-note.unanswered {
+  background-color: #fff59d; /* yellow */
+}
+
+.sticky-note.answered {
+  background-color: #81c784; /* green */
+}
+
+.sticky-note.important {
+  background-color: #f06292; /* red/pink */
+}
+
+.question-text {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.question-meta {
+  font-size: 12px;
+  color: #555;
+}
+
+.note-actions button {
+  margin-right: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.note-actions button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
