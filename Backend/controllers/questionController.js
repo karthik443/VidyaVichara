@@ -33,7 +33,7 @@ export const updateQuestion = async (req, res) => {
       { status },
       { new: true }
     );
-
+    console.log("Updated",updated);
     if (!updated) return res.status(404).json({ message: "Question not found" });
 
     req.io.emit("updateQuestion", updated);
@@ -52,3 +52,24 @@ export const clearQuestions = async (req, res) => {
     res.status(500).json({ message: "Error clearing questions" });
   }
 };
+
+export const deleteQuestion = async(req,res)=>{
+
+
+    try {
+        const questionID =  req.body._id;
+        
+    const deleteAck = await Question.deleteOne({
+      "_id":questionID}
+    );
+    // console.log("deleted",updated);
+    if (!deleteAck) return res.status(404).json({ message: "Question deleted failed" });
+
+    req.io.emit("deleteQuestion", deleteAck);
+    res.json(deleteAck);
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting question"+error.message });
+  }
+        
+
+}
