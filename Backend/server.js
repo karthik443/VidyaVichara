@@ -7,9 +7,11 @@ import jwt from "jsonwebtoken";
 import myRouter from "./Routers/questionRouter.js";
 import userRouter from "./Routers/userRouter.js";
 import ConnectDB from "./db.js";
-
+import {verifyToken} from "./middleware/auth.js"
 dotenv.config();
 ConnectDB();
+console.log("JWT_SECRET used:",process.env.JWT_SECRET ? "Loaded" : "MISSING");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +19,6 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST", "PATCH", "DELETE"] },
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || "hope_you_are_doing_well";
 
 app.use(cors());
 app.use(express.json());
@@ -28,25 +29,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// **Global JWT middleware**
-app.use((req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      req.userId = decoded.id;
-    } catch (err) {
-      req.userId = null;
-    }
-  } else {
-    req.userId = null;
-  }
-  next();
-});
 
 // Routers
-app.use("/questions", myRouter);
+
 app.use("/users", userRouter);
+
+app.use("/questions", verifyToken,myRouter);
+
 
 // Socket.io
 io.on("connection", (socket) => {

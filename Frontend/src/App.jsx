@@ -1,12 +1,16 @@
-import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
 import QuestionBoard from "./components/QuestionBoard";
 
 function App() {
   return (
-    <div>
-      <h1>VidyaVichara</h1>
-      <QuestionBoard />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/questions" element={<QuestionBoard />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 
