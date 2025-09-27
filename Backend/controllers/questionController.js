@@ -46,14 +46,22 @@ export const createQuestion = async (req, res) => {
 
 export const updateQuestion = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status,answer ,id} = req.body;
     const role = req.user.role;
     if(role==Roles.student){
       res.status(500).json({ message: "Student cannot update questions" });
     }
+    let updateList = {};
+    if(status){
+       updateList["status"] = status;
+    }
+    if(answer){
+      updateList["answer"] = answer;
+    }
+   
     const updated = await Question.findByIdAndUpdate(
-      req.params.id,
-      { status },
+      id,
+     updateList,
       { new: true }
     );
     console.log("Updated", updated);
@@ -132,3 +140,4 @@ export const upvoteQuestion = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
