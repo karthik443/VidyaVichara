@@ -10,7 +10,15 @@ function App() {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        // Optional: Clear corrupted data from localStorage
+        localStorage.removeItem("user");
+      }
+    }
   }, []);
 
   return (

@@ -854,6 +854,264 @@
 
 
 
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { io } from "socket.io-client";
+
+// const socket = io("http://localhost:5000"); // connect to backend socket
+
+// function QuestionBoard({ user }) {
+//   const [questions, setQuestions] = useState([]);
+//   const [text, setText] = useState("");
+//   const [filter, setFilter] = useState("recent");
+
+//   // Fetch all questions from backend
+//   const fetchQuestions = async () => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       const res = await axios.get("http://localhost:5000/questions", {
+//         headers: token ? { Authorization: `Bearer ${token}` } : {},
+//       });
+//       setQuestions(res.data);
+//     } catch (err) {
+//       console.error("Error fetching questions:", err);
+//     }
+//   };
+
+//   // Initialize socket listeners
+//   useEffect(() => {
+//     fetchQuestions();
+
+//     socket.on("newQuestion", (q) => setQuestions((prev) => [q, ...prev]));
+//     socket.on("updateQuestion", (updated) =>
+//       setQuestions((prev) =>
+//         prev.map((q) => (q._id === updated._id ? updated : q))
+//       )
+//     );
+//     socket.on("deleteQuestion", (deleted) =>
+//       setQuestions((prev) => prev.filter((q) => q._id !== deleted._id))
+//     );
+//     socket.on("clearQuestions", () => setQuestions([]));
+
+//     return () => socket.off();
+//   }, []);
+
+//   // STUDENT: submit new question
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (user.role !== "student") return;
+//     if (!text.trim()) return;
+
+//     try {
+//       const token = localStorage.getItem("token");
+//       await axios.post(
+//         "http://localhost:5000/questions",
+//         { text, author: user.name },
+//         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+//       );
+//       setText("");
+//     } catch (err) {
+//       console.error("Error submitting question:", err);
+//     }
+//   };
+
+//   // TEACHER: update question status
+//   const updateStatus = async (id, status=null,answer=null) => {
+//     if (user.role !== "teacher") return;
+
+//     try {
+//       const token = localStorage.getItem("token");
+//       let updateQuestion = {id};
+//       if(status){
+//         updateQuestion["status"] = status;
+//       }
+//       if(answer){
+//         updateQuestion["answer"] = answer;
+//       }
+//       await axios.post(
+//         `http://localhost:5000/questions/update`,
+//         updateQuestion,
+//         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+//       );
+//     } catch (err) {
+//       console.error("Error updating status:", err);
+//     }
+//   };
+
+//   // TEACHER: delete question
+//   const deleteQuestion = async (id) => {
+//     if (user.role !== "teacher") return;
+
+//     try {
+//       const token = localStorage.getItem("token");
+//       await axios.post(
+//         "http://localhost:5000/questions/delete",
+//         { _id: id },
+//         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+//       );
+//       setQuestions((prev) => prev.filter((q) => q._id !== id));
+//     } catch (err) {
+//       console.error("Error deleting question:", err);
+//     }
+//   };
+
+//   // TEACHER: local add answer
+//   const handleAddAnswerClick = (id) => {
+//     setQuestions((prev) =>
+//       prev.map((q) => (q._id === id ? { ...q, addingAnswer: true } : q))
+//     );
+//   };
+
+//   const handleAnswerChange = (id, value) => {
+//     setQuestions((prev) =>
+//       prev.map((q) => (q._id === id ? { ...q, tempAnswer: value } : q))
+//     );
+  
+
+//   };
+
+// function handleAnswerSubmit(id) {
+//   const question = questions.find((q) => q._id === id);
+//   const answerText = question?.tempAnswer || "Not Answerd";
+
+//   // Update local state
+//   setQuestions((prev) =>
+//     prev.map((q) =>
+//       q._id === id
+//         ? {
+//             ...q,
+//             answer: answerText,
+//             addingAnswer: false,
+//             tempAnswer: "",
+//             status: "answered",
+//           }
+//         : q
+//     )
+//   );
+
+//   console.log("submitted broooooooo");
+
+//   // Send to backend
+//   updateStatus(id, "answered", answerText);
+// }
+
+
+//   // Filter and sort questions
+//   const getFilteredQuestions = () => {
+//     if (filter === "recent") {
+//       return [...questions]
+//         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+//         .slice(0, 5);
+//     }
+//     return questions.filter((q) => q.status === filter);
+//   };
+
+//   const filteredQuestions = getFilteredQuestions();
+
+//   return (
+//     <div style={{ maxWidth: "600px", margin: "auto" }}>
+//       {/* Student: Ask question */}
+//       {user.role === "student" && (
+//         <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+//           <input
+//             value={text}
+//             onChange={(e) => setText(e.target.value)}
+//             placeholder="Enter your question"
+//             style={{ width: "80%", padding: "8px" }}
+//           />
+//           <button type="submit" style={{ padding: "8px 12px" }}>
+//             Ask
+//           </button>
+//         </form>
+//       )}
+
+//       {/* Filter */}
+//       <div style={{ margin: "10px 0" }}>
+//         <label>Filter: </label>
+//         <select
+//           value={filter}
+//           onChange={(e) => setFilter(e.target.value)}
+//         >
+//           <option value="recent">Recent</option>
+//           <option value="unanswered">Unanswered</option>
+//           <option value="answered">Answered</option>
+//           <option value="important">Important</option>
+//         </select>
+//       </div>
+
+//       {/* Questions */}
+//       <div>
+//         {filteredQuestions.map((q) => (
+//           <div
+//             key={q._id}
+//             style={{
+//               border: "1px solid #ccc",
+//               padding: "10px",
+//               marginBottom: "10px",
+//               borderRadius: "5px",
+//               boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+//             }}
+//           >
+//             <p>{q.text}</p>
+//             <small>
+//               Author: {q.author} | Status: {q.status}
+//             </small>
+
+//             {/* Teacher buttons */}
+//             {user.role === "teacher" && (
+//               <div style={{ marginTop: "5px" }}>
+//                 <button onClick={() => updateStatus(q._id, "answered")}>
+//                   Answered
+//                 </button>
+//                 <button onClick={() => updateStatus(q._id, "important")}>
+//                   Important
+//                 </button>
+//                 <button onClick={() => deleteQuestion(q._id)}>Delete</button>
+//               </div>
+//             )}
+
+//             {/* Add Answer */}
+//             {user.role === "teacher" && q.answer === "Not Answerd" && (
+//               <div style={{ marginTop: "10px" }}>
+//                 {!q.addingAnswer ? (
+//                   <button onClick={() => handleAddAnswerClick(q._id)}>
+//                     Add Answer
+//                   </button>
+//                 ) : (
+//                   <div>
+//                     <textarea
+//                       value={q.tempAnswer || ""}
+//                       onChange={(e) =>
+//                         handleAnswerChange(q._id, e.target.value)
+//                       }
+//                       rows={3}
+//                       placeholder="Type your answer here..."
+//                       style={{ width: "100%", padding: "5px" }}
+//                     />
+//                     <button onClick={() => handleAnswerSubmit(q._id)}>
+//                       Submit Answer
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* Display Answer */}
+//             {q.answer && q.answer !== "Not Answerd" && (
+//               <p style={{ color: "green", marginTop: "5px" }}>
+//                 <b>Answer:</b> {q.answer}
+//               </p>
+//             )}
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default QuestionBoard;
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -864,8 +1122,10 @@ function QuestionBoard({ user }) {
   const [questions, setQuestions] = useState([]);
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("recent");
+  const [slideshowMode, setSlideshowMode] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Fetch all questions from backend
+  // Fetch questions from backend
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -896,11 +1156,10 @@ function QuestionBoard({ user }) {
     return () => socket.off();
   }, []);
 
-  // STUDENT: submit new question
+  // STUDENT: submit question
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (user.role !== "student") return;
-    if (!text.trim()) return;
+    if (user.role !== "student" || !text.trim()) return;
 
     try {
       const token = localStorage.getItem("token");
@@ -915,21 +1174,17 @@ function QuestionBoard({ user }) {
     }
   };
 
-  // TEACHER: update question status
-  const updateStatus = async (id, status=null,answer=null) => {
+  // TEACHER: update status / answer
+  const updateStatus = async (id, status = null, answer = null) => {
     if (user.role !== "teacher") return;
-
     try {
       const token = localStorage.getItem("token");
-      let updateQuestion = {id};
-      if(status){
-        updateQuestion["status"] = status;
-      }
-      if(answer){
-        updateQuestion["answer"] = answer;
-      }
+      let updateQuestion = { id };
+      if (status) updateQuestion["status"] = status;
+      if (answer) updateQuestion["answer"] = answer;
+
       await axios.post(
-        `http://localhost:5000/questions/update`,
+        "http://localhost:5000/questions/update",
         updateQuestion,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
@@ -950,51 +1205,44 @@ function QuestionBoard({ user }) {
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
       setQuestions((prev) => prev.filter((q) => q._id !== id));
+      if (slideshowMode && currentIndex >= questions.length - 1)
+        setCurrentIndex(Math.max(0, currentIndex - 1));
     } catch (err) {
       console.error("Error deleting question:", err);
     }
   };
 
-  // TEACHER: local add answer
-  const handleAddAnswerClick = (id) => {
+  // TEACHER: handle answer input
+  const handleAddAnswerClick = (id) =>
     setQuestions((prev) =>
       prev.map((q) => (q._id === id ? { ...q, addingAnswer: true } : q))
     );
-  };
 
-  const handleAnswerChange = (id, value) => {
+  const handleAnswerChange = (id, value) =>
     setQuestions((prev) =>
       prev.map((q) => (q._id === id ? { ...q, tempAnswer: value } : q))
     );
-  
 
+  const handleAnswerSubmit = (id) => {
+    const question = questions.find((q) => q._id === id);
+    const answerText = question?.tempAnswer || "Not Answerd";
+
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q._id === id
+          ? {
+              ...q,
+              answer: answerText,
+              addingAnswer: false,
+              tempAnswer: "",
+              status: "answered",
+            }
+          : q
+      )
+    );
+
+    updateStatus(id, "answered", answerText);
   };
-
-function handleAnswerSubmit(id) {
-  const question = questions.find((q) => q._id === id);
-  const answerText = question?.tempAnswer || "Not Answerd";
-
-  // Update local state
-  setQuestions((prev) =>
-    prev.map((q) =>
-      q._id === id
-        ? {
-            ...q,
-            answer: answerText,
-            addingAnswer: false,
-            tempAnswer: "",
-            status: "answered",
-          }
-        : q
-    )
-  );
-
-  console.log("submitted broooooooo");
-
-  // Send to backend
-  updateStatus(id, "answered", answerText);
-}
-
 
   // Filter and sort questions
   const getFilteredQuestions = () => {
@@ -1007,10 +1255,26 @@ function handleAnswerSubmit(id) {
   };
 
   const filteredQuestions = getFilteredQuestions();
+  const currentQuestion = filteredQuestions[currentIndex];
 
   return (
     <div style={{ maxWidth: "600px", margin: "auto" }}>
-      {/* Student: Ask question */}
+      {/* Slideshow toggle */}
+      <div style={{ margin: "10px 0" }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={slideshowMode}
+            onChange={() => {
+              setSlideshowMode((prev) => !prev);
+              setCurrentIndex(0);
+            }}
+          />{" "}
+          Slideshow Mode
+        </label>
+      </div>
+
+      {/* Student ask question */}
       {user.role === "student" && (
         <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
           <input
@@ -1041,69 +1305,147 @@ function handleAnswerSubmit(id) {
 
       {/* Questions */}
       <div>
-        {filteredQuestions.map((q) => (
-          <div
-            key={q._id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-              boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
-            }}
-          >
-            <p>{q.text}</p>
-            <small>
-              Author: {q.author} | Status: {q.status}
-            </small>
+        {slideshowMode ? (
+          currentQuestion && (
+            <div
+              style={{
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+              }}
+            >
+              <p>{currentQuestion.text}</p>
+              <small>
+                Author: {currentQuestion.author} | Status: {currentQuestion.status}
+              </small>
 
-            {/* Teacher buttons */}
-            {user.role === "teacher" && (
-              <div style={{ marginTop: "5px" }}>
-                <button onClick={() => updateStatus(q._id, "answered")}>
-                  Answered
-                </button>
-                <button onClick={() => updateStatus(q._id, "important")}>
-                  Important
-                </button>
-                <button onClick={() => deleteQuestion(q._id)}>Delete</button>
-              </div>
-            )}
-
-            {/* Add Answer */}
-            {user.role === "teacher" && q.answer === "Not Answerd" && (
-              <div style={{ marginTop: "10px" }}>
-                {!q.addingAnswer ? (
-                  <button onClick={() => handleAddAnswerClick(q._id)}>
-                    Add Answer
+              {/* Teacher buttons */}
+              {user.role === "teacher" && (
+                <div style={{ marginTop: "5px" }}>
+                  <button onClick={() => updateStatus(currentQuestion._id, "answered")}>
+                    Answered
                   </button>
-                ) : (
-                  <div>
-                    <textarea
-                      value={q.tempAnswer || ""}
-                      onChange={(e) =>
-                        handleAnswerChange(q._id, e.target.value)
-                      }
-                      rows={3}
-                      placeholder="Type your answer here..."
-                      style={{ width: "100%", padding: "5px" }}
-                    />
-                    <button onClick={() => handleAnswerSubmit(q._id)}>
-                      Submit Answer
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+                  <button onClick={() => updateStatus(currentQuestion._id, "important")}>
+                    Important
+                  </button>
+                  <button onClick={() => deleteQuestion(currentQuestion._id)}>
+                    Delete
+                  </button>
+                </div>
+              )}
 
-            {/* Display Answer */}
-            {q.answer && q.answer !== "Not Answerd" && (
-              <p style={{ color: "green", marginTop: "5px" }}>
-                <b>Answer:</b> {q.answer}
-              </p>
-            )}
-          </div>
-        ))}
+              {/* Add Answer */}
+              {user.role === "teacher" && currentQuestion.answer === "Not Answerd" && (
+                <div style={{ marginTop: "10px" }}>
+                  {!currentQuestion.addingAnswer ? (
+                    <button onClick={() => handleAddAnswerClick(currentQuestion._id)}>
+                      Add Answer
+                    </button>
+                  ) : (
+                    <div>
+                      <textarea
+                        value={currentQuestion.tempAnswer || ""}
+                        onChange={(e) =>
+                          handleAnswerChange(currentQuestion._id, e.target.value)
+                        }
+                        rows={3}
+                        placeholder="Type your answer here..."
+                        style={{ width: "100%", padding: "5px" }}
+                      />
+                      <button onClick={() => handleAnswerSubmit(currentQuestion._id)}>
+                        Submit Answer
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {currentQuestion.answer && currentQuestion.answer !== "Not Answerd" && (
+                <p style={{ color: "green", marginTop: "5px" }}>
+                  <b>Answer:</b> {currentQuestion.answer}
+                </p>
+              )}
+
+              {/* Slideshow navigation */}
+              <div style={{ marginTop: "10px" }}>
+                <button
+                  onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+                  disabled={currentIndex === 0}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentIndex((prev) =>
+                      Math.min(prev + 1, filteredQuestions.length - 1)
+                    )
+                  }
+                  disabled={currentIndex === filteredQuestions.length - 1}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )
+        ) : (
+          // Normal list view
+          filteredQuestions.map((q) => (
+            <div
+              key={q._id}
+              style={{
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+              }}
+            >
+              <p>{q.text}</p>
+              <small>
+                Author: {q.author} | Status: {q.status}
+              </small>
+
+              {/* Teacher buttons */}
+              {user.role === "teacher" && (
+                <div style={{ marginTop: "5px" }}>
+                  <button onClick={() => updateStatus(q._id, "answered")}>Answered</button>
+                  <button onClick={() => updateStatus(q._id, "important")}>Important</button>
+                  <button onClick={() => deleteQuestion(q._id)}>Delete</button>
+                </div>
+              )}
+
+              {/* Add Answer */}
+              {user.role === "teacher" && q.answer === "Not Answerd" && (
+                <div style={{ marginTop: "10px" }}>
+                  {!q.addingAnswer ? (
+                    <button onClick={() => handleAddAnswerClick(q._id)}>Add Answer</button>
+                  ) : (
+                    <div>
+                      <textarea
+                        value={q.tempAnswer || ""}
+                        onChange={(e) => handleAnswerChange(q._id, e.target.value)}
+                        rows={3}
+                        placeholder="Type your answer here..."
+                        style={{ width: "100%", padding: "5px" }}
+                      />
+                      <button onClick={() => handleAnswerSubmit(q._id)}>Submit Answer</button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Display Answer */}
+              {q.answer && q.answer !== "Not Answerd" && (
+                <p style={{ color: "green", marginTop: "5px" }}>
+                  <b>Answer:</b> {q.answer}
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
