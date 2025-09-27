@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import { io } from "socket.io-client";
@@ -375,8 +374,6 @@
 // export default QuestionBoard;
 
 
-=======
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -387,10 +384,6 @@ function QuestionBoard({ user }) {
   const [questions, setQuestions] = useState([]);
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("recent");
-<<<<<<< HEAD
-=======
-  const role = localStorage.getItem("role") || "student"; // ✅ get role from login
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
 
   const fetchQuestions = async () => {
     try {
@@ -406,13 +399,9 @@ function QuestionBoard({ user }) {
 
     socket.on("newQuestion", (q) => setQuestions((prev) => [q, ...prev]));
     socket.on("updateQuestion", (updated) =>
-<<<<<<< HEAD
       setQuestions((prev) =>
         prev.map((q) => (q._id === updated._id ? updated : q))
       )
-=======
-      setQuestions((prev) => prev.map((q) => (q._id === updated._id ? updated : q)))
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
     );
     socket.on("deleteQuestion", (deleted) =>
       setQuestions((prev) => prev.filter((q) => q._id !== deleted._id))
@@ -439,10 +428,7 @@ function QuestionBoard({ user }) {
     }
   };
 
-<<<<<<< HEAD
   // Teacher: update status
-=======
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
   const updateStatus = async (id, status) => {
     if (user.role !== "teacher") return;
     try {
@@ -456,14 +442,10 @@ function QuestionBoard({ user }) {
     }
   };
 
-<<<<<<< HEAD
   // Teacher: delete question
-=======
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
   const deleteQuestion = async (id) => {
     if (user.role !== "teacher") return;
     try {
-<<<<<<< HEAD
       await axios.post(
         "http://localhost:5000/questions/delete",
         { _id: id },
@@ -471,23 +453,10 @@ function QuestionBoard({ user }) {
       );
       setQuestions((prev) => prev.filter((q) => q._id !== id));
     } catch (err) {
-=======
-      await axios.post("http://localhost:5000/questions/delete", { _id: id });
-    } catch (err) {
-      console.error("Error deleting question:", err);
-    }
-  };
-
-  const clearAll = async () => {
-    try {
-      await axios.delete("http://localhost:5000/questions");
-    } catch (err) {
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
       console.error(err);
     }
   };
 
-<<<<<<< HEAD
   // Teacher: add answer (local for now)
   const handleAddAnswerClick = (id) => {
     setQuestions((prev) =>
@@ -524,11 +493,6 @@ function QuestionBoard({ user }) {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       return sorted.slice(0, 5);
-=======
-  const getFilteredQuestions = () => {
-    if (filter === "recent") {
-      return [...questions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
->>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
     }
     return questions.filter((q) => q.status === filter);
   };
