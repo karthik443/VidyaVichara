@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import QuestionBoard from "./components/QuestionBoard";
+// import QuestionBoard from "./components/QuestionBoard";
 import Navbar from "./components/Navbar";
-import LectureBoard from "./components/lectureBoard";
+import LectureBoard from "./components/LectureBoard";
 
 function App() {
   const [user, setUser] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedUser = sessionStorage.getItem("user");
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (error) {
-        console.error("Failed to parse user from localStorage", error);
-        // Optional: Clear corrupted data from localStorage
-        localStorage.removeItem("user");
+        console.error("Failed to parse user from sessionStorage", error);
+        // Optional: Clear corrupted data from sessionStorage
+        sessionStorage.removeItem("user");
       }
     }
   }, []);

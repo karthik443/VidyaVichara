@@ -2,9 +2,9 @@ import React from "react";
 
 function Navbar({ user, setUser }) {
   const handleLogout = () => {
-    // Remove token and user info from localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // Remove token and user info from sessionStorage
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     setUser(null); // send user back to login/register page
   };
 

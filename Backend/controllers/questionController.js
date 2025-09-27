@@ -1,3 +1,4 @@
+import { fileURLToPath } from "url";
 import Question from "../models/question.js";
 const Roles = {
   teacher: "teacher",
@@ -15,7 +16,7 @@ export const getQuestions = async (req, res) => {
     let filter = {lectureId};
    
     if (status) filter.status = status;   // e.g., "answered" or "unanswered"
-   
+    console.log(filter,"Filter");
     const questions = await Question.find(filter).sort({ createdAt: -1 });
     res.json(questions);
   } catch (error) {
@@ -40,6 +41,7 @@ export const createQuestion = async (req, res) => {
     req.io.emit("newQuestion", newQuestion); // emit event using socket.io reference
     res.status(201).json(newQuestion);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Error adding question" });
   }
 };

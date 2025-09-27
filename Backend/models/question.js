@@ -10,12 +10,12 @@ const questoinSchema = new mongoose.Schema(
       enum: ["unanswered", "answered", "important"],
       default: "unanswered",
     },
-    lectureId: [
+    lectureId: 
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "lecture", // reference to the lecture
       },
-    ],
+    
     isDeleted: { type: Boolean, default: false },
     upvotes: [
       {
