@@ -1,31 +1,35 @@
-import { timeStamp } from "console";
-import mongoose, { mongo } from "mongoose";
-const questoinSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+
+const questionSchema = new mongoose.Schema(
   {
-    author: { type: String, default: "Anonymus" },
+    author: { type: String, default: "Anonymous" },
     text: { type: String, required: true },
-    answer: { type: String, default: "Not Answerd" },
+    answer: { type: String, default: "Not Answered" },
     status: {
       type: String,
       enum: ["unanswered", "answered", "important"],
       default: "unanswered",
     },
-    lectureId: 
+    lectureId: {
+      type: String,
+      
+    },
+    resources: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "lecture", // reference to the lecture
+        filename: String,
+        url: String,
       },
-    
+    ],
     isDeleted: { type: Boolean, default: false },
     upvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // reference to the user who upvoted
+        ref: "User",
       },
     ],
   },
   { timestamps: true }
 );
 
-const Question = mongoose.model("question", questoinSchema);
+const Question = mongoose.model("question", questionSchema);
 export default Question;

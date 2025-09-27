@@ -1,5 +1,8 @@
 import { fileURLToPath } from "url";
+// import { upload } from "../middleware/upload.js";
 import Question from "../models/question.js";
+import multer from "multer";
+import path from "path";
 const Roles = {
   teacher: "teacher",
   student: "student",
@@ -46,35 +49,54 @@ export const createQuestion = async (req, res) => {
   }
 };
 
+// 1️⃣ Setup multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage }).array("resources"); // same name as input
+// 2️⃣ Update question
 export const updateQuestion = async (req, res) => {
-  try {
-    const { status,answer ,id} = req.body;
-    const role = req.user.role;
-    if(role==Roles.student){
-      res.status(500).json({ message: "Student cannot update questions" });
-    }
-    let updateList = {};
-    if(status){
-       updateList["status"] = status;
-    }
-    if(answer){
-      updateList["answer"] = answer;
-    }
-   
-    const updated = await Question.findByIdAndUpdate(
-      id,
-     updateList,
-      { new: true }
-    );
-    console.log("Updated", updated);
-    if (!updated)
-      return res.status(404).json({ message: "Question not found" });
+  upload(req, res, async function (err) {
+    
+    if (err){
+      console.log(err)
+return res.status(500).json({ message: "File upload error" });
 
-    req.io.emit("updateQuestion", updated);
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating question" });
-  }
+    } 
+
+    try {
+      const { id, status, answer } = req.body;
+      const role = req.user.role;
+
+      if (role === Roles.student)
+        return res.status(403).json({ message: "Student cannot update question" });
+
+      let updateList = {};
+      if (status) updateList.status = status;
+      if (answer) updateList.answer = answer;
+
+      if (req.files && req.files.length > 0) {
+        updateList.resources = req.files.map((file) => ({
+          filename: file.originalname,
+          url: `/uploads/${file.filename}`,
+        }));
+      }
+
+      const updated = await Question.findByIdAndUpdate(id, updateList, { new: true });
+
+      if (!updated) return res.status(404).json({ message: "Question not found" });
+
+      req.io.emit("updateQuestion", updated);
+      res.json(updated);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error updating question" });
+    }
+  });
 };
 
 export const clearQuestions = async (req, res) => {
