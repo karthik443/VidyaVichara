@@ -91,6 +91,7 @@ export const clearQuestions = async (req, res) => {
 export const deleteQuestion = async (req, res) => {
   try {
     const questionID = req.body._id;
+    const role = req.user.role;
     if(role==Roles.student){
       res.status(500).json({ message: "Student cannot delete questions" });
     }
