@@ -7,9 +7,16 @@ const Roles = {
 
 export const getLecture = async (req, res) => {
   try {
-    const { status } = req.query;
-   // let filter = {};
-    const lectures = await Lecture.find({}).sort({ createdAt: -1 });
+    
+    const {userId} = req.query;
+
+    let filter = {};
+    if(userId && req.user.role==Roles.teacher){
+      filter["creatorId"] = userId;
+    }
+    console.log(filter);
+
+    const lectures = await Lecture.find(filter).sort({ createdAt: -1 });
     res.json(lectures);
   } catch (error) {
     res.status(500).json({ message: "Error fetching lectures" });
@@ -47,7 +54,10 @@ export const createLecture = async (req, res) => {
   try {
     const { title } = req.body;
     const role = req.user.role;
-
+    
+    const creatorId = req.user.id.toString();
+    console.log(req.user)
+    console.log("Lecture created ", creatorId);
     if (!title?.trim()) {
       return res.status(400).json({ message: "Title cannot be empty" });
     }
@@ -59,6 +69,7 @@ export const createLecture = async (req, res) => {
       lecturerName: req.user.name || "Anonymous",
       title,
       startTime: Date.now(),
+      creatorId
     });
 
     await lecture.save();
@@ -66,6 +77,7 @@ export const createLecture = async (req, res) => {
 
     res.status(201).json(lecture);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error creating lecture" });
   }
 };
