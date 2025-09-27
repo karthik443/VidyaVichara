@@ -5,6 +5,7 @@ import {
   updateQuestion,
   clearQuestions,
   deleteQuestion,
+  upvoteQuestion,
 } from "../controllers/questionController.js";
 
 const router = express.Router();
