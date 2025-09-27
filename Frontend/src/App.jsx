@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import QuestionBoard from "./components/QuestionBoard";
 import Navbar from "./components/Navbar";
+import LectureBoard from "./components/lectureBoard";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -55,7 +56,8 @@ function App() {
           </>
         )
       ) : (
-        <QuestionBoard user={user} />
+        // <QuestionBoard user={user} />
+        <LectureBoard user={user} />
       )}
     </div>
   );
