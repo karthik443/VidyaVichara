@@ -1,3 +1,4 @@
+/* Keep existing styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,390 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* VidyaVichara App Styles */
+:root {
+  --primary-purple: #8b5cf6;
+  --primary-blue: #3b82f6;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-600: #4b5563;
+  --gray-800: #1f2937;
+  --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-600: #9333ea;
+  --purple-700: #7c3aed;
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --red-50: #fef2f2;
+  --red-200: #fecaca;
+  --red-700: #b91c1c;
+}
+
+/* Layout Classes */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--purple-50) 0%, white 50%, var(--blue-50) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 1024px;
+}
+
+/* Header Styles */
+.app-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.app-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 1rem;
+}
+
+.app-subtitle {
+  font-size: 1.25rem;
+  color: var(--gray-600);
+}
+
+/* Card Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Card Styles */
+.login-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--gray-200);
+}
+
+.login-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.login-card.active {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.login-card.active.teacher {
+  border-color: var(--purple-600);
+}
+
+.login-card.active.student {
+  border-color: var(--blue-600);
+}
+
+/* Card Content */
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.card-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.card-icon.teacher {
+  background-color: var(--purple-100);
+  color: var(--purple-600);
+}
+
+.card-icon.student {
+  background-color: var(--blue-100);
+  color: var(--blue-600);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  color: var(--gray-600);
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--primary-purple);
+}
+
+.form-input.student:focus {
+  box-shadow: 0 0 0 2px var(--primary-blue);
+}
+
+.form-input.code {
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.25rem;
+}
+
+/* Button Styles */
+.btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: var(--purple-600);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--purple-700);
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 2px var(--purple-600), 0 0 0 4px rgba(147, 51, 234, 0.1);
+}
+
+.btn-student {
+  background-color: var(--blue-600);
+  color: white;
+}
+
+.btn-student:hover {
+  background-color: var(--blue-700);
+}
+
+.btn-student:focus {
+  box-shadow: 0 0 0 2px var(--blue-600), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.btn-secondary {
+  background-color: var(--gray-100);
+  color: var(--gray-600);
+  border: 2px solid var(--gray-200);
+}
+
+.btn-secondary:hover {
+  background-color: var(--gray-200);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--blue-600);
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.btn-link:hover {
+  color: var(--blue-700);
+}
+
+/* Error Styles */
+.error-container {
+  margin-top: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error-message {
+  background-color: var(--red-50);
+  border: 1px solid var(--red-200);
+  color: var(--red-700);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--gray-50);
+  padding: 2rem 1rem;
+}
+
+.dashboard-header {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.lecture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.lecture-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.lecture-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Board Styles */
+.board-container {
+  min-height: 100vh;
+  background: var(--gray-50);
+  padding: 1rem;
+}
+
+.board-header {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sticky-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sticky-note {
+  background: #fef3c7;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sticky-note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-note.answered {
+  background: #dcfce7;
+}
+
+.sticky-note.important {
+  border: 2px solid #ef4444;
+}
+
+/* Question Composer */
+.question-composer {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 1rem;
+}
+
+.composer-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 0.5rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.composer-input:focus {
+  outline: none;
+  border-color: var(--purple-600);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2rem;
+  }
+  
+  .login-card {
+    padding: 1.5rem;
+  }
+  
+  .board-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sticky-grid {
+    grid-template-columns: 1fr;
+  }
 }
