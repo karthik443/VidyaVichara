@@ -9,10 +9,10 @@ const Roles = {
 export const getQuestions = async (req, res) => {
   try {
     
-    const { status } = req.query;
+    const { status,lectureId } = req.query;
     
     
-    let filter = {};
+    let filter = {lectureId};
    
     if (status) filter.status = status;   // e.g., "answered" or "unanswered"
    
@@ -26,7 +26,7 @@ export const getQuestions = async (req, res) => {
 export const createQuestion = async (req, res) => {
   try {
     
-    const { text, author } = req.body;
+    const { text, author ,lectureId} = req.body;
     const role = req.user.role;
     if (!text.trim())
       return res.status(400).json({ message: "Question cannot be empty" });
@@ -34,7 +34,7 @@ export const createQuestion = async (req, res) => {
     if(role==Roles.teacher){
       return res.status(400).json({ message: "Teacher Cannot ask question" });
     }
-    const newQuestion = new Question({ text, author });
+    const newQuestion = new Question({ text, author ,lectureId});
     await newQuestion.save();
 
     req.io.emit("newQuestion", newQuestion); // emit event using socket.io reference
