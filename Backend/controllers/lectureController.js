@@ -71,27 +71,59 @@ export const createLecture = async (req, res) => {
 };
 
 
+// export const endLecture = async (req, res) => {
+//   try {
+//     const lectureId = req.body._id;
+//     const role = req.user.role;
+//     if(role==Roles.student){
+//       res.status(500).json({ message: "Student cannot update lectures" });
+//     }
+//     let status={};
+//     status["endTime"]=Date.now();
+//     status["isLive"]="Completed"
+//     const updated = await Lecture.findByIdAndUpdate({_id:lectureId},
+//       { status },
+     
+//     );
+//     console.log("Updated", updated);
+//     if (!updated)
+//       return res.status(404).json({ message: "Lecture not found" });
+
+//     req.io.emit("updateLecture", updated);
+//     res.json(updated);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error updating lecture" });
+//   }
+// };
+
+// End a lecture
 export const endLecture = async (req, res) => {
   try {
-    const lectureId = req.body._id;
+    const lectureId = req.params.id;
     const role = req.user.role;
-    if(role==Roles.student){
-      res.status(500).json({ message: "Student cannot update lectures" });
+
+    if (role === Roles.student) {
+      return res.status(403).json({ message: "Students cannot end lectures" });
     }
-    let status={};
-    status["endTime"]=Date.now();
-    status["isLive"]="Completed"
-    const updated = await Lecture.findByIdAndUpdate({_id:lectureId},
-      { status },
-     
+
+    const updated = await Lecture.findByIdAndUpdate(
+      lectureId,
+      {
+        $set: {
+          endTime: Date.now(),
+          isLive: "Completed",
+        },
+      },
+      { new: true }
     );
-    console.log("Updated", updated);
-    if (!updated)
+
+    if (!updated) {
       return res.status(404).json({ message: "Lecture not found" });
+    }
 
     req.io.emit("updateLecture", updated);
     res.json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Error updating lecture" });
+    res.status(500).json({ message: "Error ending lecture" });
   }
 };
