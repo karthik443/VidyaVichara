@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import QuestionBoard from "./components/QuestionBoard";
 import Navbar from "./components/Navbar";
+import LectureBoard from "./components/lectureBoard";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -10,7 +11,15 @@ function App() {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        // Optional: Clear corrupted data from localStorage
+        localStorage.removeItem("user");
+      }
+    }
   }, []);
 
   return (
@@ -47,7 +56,8 @@ function App() {
           </>
         )
       ) : (
-        <QuestionBoard user={user} />
+        // <QuestionBoard user={user} />
+        <LectureBoard user={user} />
       )}
     </div>
   );

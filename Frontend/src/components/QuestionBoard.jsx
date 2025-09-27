@@ -8,6 +8,8 @@ function QuestionBoard({ user }) {
   const [questions, setQuestions] = useState([]);
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("recent");
+  const [slideshowMode, setSlideshowMode] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // fetch questions
   const fetchQuestions = async () => {
@@ -82,6 +84,8 @@ function QuestionBoard({ user }) {
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
       setQuestions((prev) => prev.filter((q) => q._id !== id));
+      if (slideshowMode && currentIndex >= questions.length - 1)
+        setCurrentIndex(Math.max(0, currentIndex - 1));
     } catch (err) {
       console.error("Error deleting question:", err);
     }
