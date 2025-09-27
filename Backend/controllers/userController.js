@@ -1,7 +1,8 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "hope_you_are_doing_well";
+import dotenv from "dotenv";
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const registerUser = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ export const registerUser = async (req, res) => {
     const newUser = new User({ name, email, password, role });
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, {
+    const token = jwt.sign({ "id": newUser._id, "role":role, "userName":name }, JWT_SECRET, {
       expiresIn: "1d",
     });
 
@@ -44,8 +45,9 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email, password });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
-
+      const token = jwt.sign({ "id": user._id, "role":user.role, "userName":user.name }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
     res.json({
       _id: user._id,
       name: user.name,

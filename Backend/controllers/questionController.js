@@ -4,7 +4,7 @@ export const getQuestions = async (req, res) => {
   try {
     
     const { status } = req.query;
-
+    console.log("request " ,req);
     let filter = {};
    
     if (status) filter.status = status;   // e.g., "answered" or "unanswered"

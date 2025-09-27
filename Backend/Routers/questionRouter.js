@@ -1,4 +1,5 @@
 import express from "express";
+import {verifyToken} from "../middleware/auth.js"
 import {
   getQuestions,
   createQuestion,
@@ -9,11 +10,11 @@ import {
 } from "../controllers/questionController.js";
 
 const router = express.Router();
-
+// router.use(verifyToken);
 router.get("/", getQuestions);
 router.post("/", createQuestion);
 router.patch("/:id", updateQuestion);
-router.delete("/", clearQuestions);
+router.delete("/", verifyToken,clearQuestions);
 router.post("/delete", deleteQuestion);
 router.post("/upvote/:id", upvoteQuestion);
 
