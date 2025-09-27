@@ -11,15 +11,17 @@ function LectureBoard({ user }) {
   const [joinedLecture, setJoinedLecture] = useState(null); // current lecture
 
   const fetchLectures = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/lecture", {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-      });
-      setLectures(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const res = await axios.get("http://localhost:5000/lecture", {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      params: { userId: user._id } // fixed
+    });
+    setLectures(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   const JoinLecture = (lecture) => {
     setJoinedLecture(lecture);
@@ -47,9 +49,10 @@ function LectureBoard({ user }) {
     if (!title.trim()) return;
 
     try {
+      const userId = user._id;
       await axios.post(
         "http://localhost:5000/lecture",
-        { title },
+        { title ,userId},
         { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
       );
       setTitle("");

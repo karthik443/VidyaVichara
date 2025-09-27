@@ -6,6 +6,7 @@ const lectureSchema = new mongoose.Schema(
     title: { type: String, required: true },
     startTime: { type: Date },
     endTime: { type: Date },
+    creatorId:{type:String},
     isLive: {
       type: String,
       enum: ["Live", "Completed"],
