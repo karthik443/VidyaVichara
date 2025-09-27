@@ -10,8 +10,8 @@ function QuestionBoard({ user, lecture, onLeave }) {
   const [filter, setFilter] = useState("recent");
 
   const lectureId = lecture?._id;
-    const isLectureLive = lecture?.isLive === "Live";
-  // fetch questions for this lecture
+  const isLectureLive = lecture?.isLive === "Live";
+
   const fetchQuestions = async () => {
     if (!lectureId) return;
     try {
@@ -45,7 +45,6 @@ function QuestionBoard({ user, lecture, onLeave }) {
     return () => socket.off();
   }, [lectureId]);
 
-  // student asks question
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (user.role !== "student") return;
@@ -63,16 +62,21 @@ function QuestionBoard({ user, lecture, onLeave }) {
     }
   };
 
-  // teacher updates question status or answer
-  const updateStatus = async (id, status = null, answer = null) => {
+  const updateStatus = async (id, status = null, answer = null, file = null) => {
     if (user.role !== "teacher") return;
     try {
       const token = sessionStorage.getItem("token");
-      let updateQuestion = { id };
-      if (status) updateQuestion.status = status;
-      if (answer !== null) updateQuestion.answer = answer;
-      await axios.post(`http://localhost:5000/questions/update`, updateQuestion, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      const formData = new FormData();
+      formData.append("id", id);
+      if (status) formData.append("status", status);
+      if (answer) formData.append("answer", answer);
+      if (file) formData.append("resources", file);
+
+      await axios.post("http://localhost:5000/questions/update", formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "multipart/form-data",
+        },
       });
     } catch (err) {
       console.error(err);
@@ -101,7 +105,11 @@ function QuestionBoard({ user, lecture, onLeave }) {
   ];
 
   const sortDesc = (arr) =>
-    [...arr].sort((a, b) => new Date(b.createdAt || b.created_at || b.timestamp) - new Date(a.createdAt || a.created_at || a.timestamp));
+    [...arr].sort(
+      (a, b) =>
+        new Date(b.createdAt || b.created_at || b.timestamp) -
+        new Date(a.createdAt || a.created_at || a.timestamp)
+    );
 
   const getColumnQuestions = (statusKey) => {
     if (filter === "recent") {
@@ -138,7 +146,7 @@ function QuestionBoard({ user, lecture, onLeave }) {
     teacherActions: { display: "flex", gap: 8, marginTop: 8 },
     leaveBtn: { marginBottom: 20, padding: "6px 12px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
   };
-console.log(isLectureLive,"Islecturelive")
+
   return (
     <div style={styles.page}>
       <button style={styles.leaveBtn} onClick={onLeave}>← Leave Lecture</button>
@@ -150,28 +158,22 @@ console.log(isLectureLive,"Islecturelive")
         </div>
 
         <div style={styles.controls}>
-
-
-{user.role === "student" && isLectureLive && (
-  <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
-    <input
-      style={styles.input}
-      placeholder="Type your question..."
-      value={text}
-      onChange={(e) => setText(e.target.value)}
-    />
-    <button style={styles.askButton} type="submit">
-      Ask
-    </button>
-  </form>
-)}
-
-{!isLectureLive && (
-  <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-    Lecture is not live. Your questions will be added and visible to teacher.
-  </div>
-)}
-
+          {user.role === "student" && isLectureLive && (
+            <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
+              <input
+                style={styles.input}
+                placeholder="Type your question..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
+              <button style={styles.askButton} type="submit">Ask</button>
+            </form>
+          )}
+          {!isLectureLive && (
+            <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+              Lecture is not live. Your questions will be added and visible to teacher.
+            </div>
+          )}
           <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: "8px 10px", borderRadius: 8, border: "1px solid #e0e0e0" }}>
             <option value="recent">Recent</option>
             <option value="unanswered">Unanswered</option>
@@ -207,60 +209,66 @@ console.log(isLectureLive,"Islecturelive")
                     </div>
                   )}
 
+                  {q.resources && q.resources.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <strong>Resources:</strong>
+                      <ul style={{ marginTop: 4 }}>
+                        {q.resources.map((r, idx) => (
+                          <li key={idx}>
+                            <a href={`http://localhost:5000${r.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#0ea5a4", textDecoration: "underline" }}>
+                              {r.filename}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   {user.role === "teacher" && (
-  <div style={styles.teacherActions}>
-    <button
-      onClick={() => updateStatus(q._id, "answered")}
-      style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}
-    >
-      Mark Answered
-    </button>
-    <button
-      onClick={() => updateStatus(q._id, "important")}
-      style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}
-    >
-      Important
-    </button>
-    <button
-      onClick={() => deleteQuestion(q._id)}
-      style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}
-    >
-      Delete
-    </button>
+                    <div style={{ marginTop: 8 }}>
+                      {/* Answer + File */}
+                      <div style={{ display: "flex", gap: 4, marginBottom: 4 }}>
+                        <input
+                          type="text"
+                          placeholder="Type answer..."
+                          value={q.tempAnswer || ""}
+                          onChange={(e) =>
+                            setQuestions((prev) =>
+                              prev.map((item) =>
+                                item._id === q._id ? { ...item, tempAnswer: e.target.value } : item
+                              )
+                            )
+                          }
+                          style={{ flex: 1, padding: 4, borderRadius: 6, border: "1px solid #ccc" }}
+                        />
+                        <input
+                          type="file"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            setQuestions((prev) =>
+                              prev.map((item) =>
+                                item._id === q._id ? { ...item, tempFile: file } : item
+                              )
+                            );
+                          }}
+                        />
+                        <button
+                          onClick={() => updateStatus(q._id, "answered", q.tempAnswer, q.tempFile)}
+                          style={{ background: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 6 }}
+                        >
+                          Answer
+                        </button>
+                      </div>
 
-    {/* Inline answer input */}
-    <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
-      <input
-        type="text"
-        placeholder="Type answer..."
-        value={q.tempAnswer || ""}
-        onChange={(e) => {
-          setQuestions((prev) =>
-            prev.map((item) =>
-              item._id === q._id ? { ...item, tempAnswer: e.target.value } : item
-            )
-          );
-        }}
-        style={{ flex: 1, padding: 4, borderRadius: 6, border: "1px solid #ccc" }}
-      />
-      <button
-        onClick={() => {
-          if (!q.tempAnswer?.trim()) return;
-          updateStatus(q._id, "answered", q.tempAnswer);
-          setQuestions((prev) =>
-            prev.map((item) =>
-              item._id === q._id ? { ...item, tempAnswer: "" } : item
-            )
-          );
-        }}
-        style={{ ...styles.pillBtn, background: "#22c55e", color: "#fff" }}
-      >
-        Answer
-      </button>
-    </div>
-  </div>
-)}
-
+                      {/* Status Buttons */}
+                      <div style={{ display: "flex", gap: 4 }}>
+                        <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
+                        <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
+                        <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
+                        <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
