@@ -14,8 +14,8 @@ function Login({ setUser }) {
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data));
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data));
       setUser(res.data);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

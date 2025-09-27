@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import QuestionBoard from "./QuestionBoard";
 
 const socket = io("http://localhost:5000");
 
 function LectureBoard({ user }) {
   const [lectures, setLectures] = useState([]);
   const [title, setTitle] = useState("");
+  const [joinedLecture, setJoinedLecture] = useState(null); // current lecture
 
   const fetchLectures = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/lecture");
+      const res = await axios.get("http://localhost:5000/lecture", {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      });
       setLectures(res.data);
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const JoinLecture = (lecture) => {
+    setJoinedLecture(lecture);
+  };
+
+  const handleLeaveLecture = () => {
+    setJoinedLecture(null);
   };
 
   useEffect(() => {
@@ -22,9 +34,7 @@ function LectureBoard({ user }) {
 
     socket.on("newLecture", (l) => setLectures((prev) => [l, ...prev]));
     socket.on("updateLecture", (updated) =>
-      setLectures((prev) =>
-        prev.map((l) => (l._id === updated._id ? updated : l))
-      )
+      setLectures((prev) => prev.map((l) => (l._id === updated._id ? updated : l)))
     );
 
     return () => socket.off();
@@ -40,7 +50,7 @@ function LectureBoard({ user }) {
       await axios.post(
         "http://localhost:5000/lecture",
         { title },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
       );
       setTitle("");
     } catch (err) {
@@ -55,12 +65,23 @@ function LectureBoard({ user }) {
       await axios.post(
         `http://localhost:5000/lecture/${id}`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
       );
     } catch (err) {
       console.error(err);
     }
   };
+
+  // If joined, show QuestionBoard
+  if (joinedLecture) {
+    return (
+      <QuestionBoard
+        user={user}
+        lecture={joinedLecture}
+        onLeave={handleLeaveLecture}
+      />
+    );
+  }
 
   return (
     <div style={{ maxWidth: "600px", margin: "auto" }}>
@@ -90,8 +111,14 @@ function LectureBoard({ user }) {
             boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
           }}
         >
+          <p><b>{l.title}</b></p>
           <p>
-            <b>{l.title}</b>
+            <b
+              style={{ color: "blue", cursor: "pointer" }}
+              onClick={() => JoinLecture(l)}
+            >
+              Join
+            </b>
           </p>
           <small>
             By: {l.lecturerName} | Status: {l.isLive}

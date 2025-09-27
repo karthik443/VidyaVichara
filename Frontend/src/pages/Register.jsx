@@ -20,8 +20,8 @@ function Register({ setUser }) {
 
       
       // Save token and user info
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data.user));
       setUser(res.data.user);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
