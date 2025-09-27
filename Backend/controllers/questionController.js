@@ -46,7 +46,7 @@ export const createQuestion = async (req, res) => {
 
 export const updateQuestion = async (req, res) => {
   try {
-    const { status,answer } = req.body;
+    const { status,answer ,id} = req.body;
     const role = req.user.role;
     if(role==Roles.student){
       res.status(500).json({ message: "Student cannot update questions" });
@@ -60,7 +60,7 @@ export const updateQuestion = async (req, res) => {
     }
    
     const updated = await Question.findByIdAndUpdate(
-      req.params.id,
+      id,
      updateList,
       { new: true }
     );
