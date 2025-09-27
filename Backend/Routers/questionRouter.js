@@ -13,7 +13,7 @@ const router = express.Router();
 // router.use(verifyToken);
 router.get("/", getQuestions);
 router.post("/", createQuestion);
-router.patch("/:id", updateQuestion);
+router.post("/update", updateQuestion);
 router.delete("/", verifyToken,clearQuestions);
 router.post("/delete", deleteQuestion);
 router.post("/upvote/:id", upvoteQuestion);
