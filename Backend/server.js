@@ -8,6 +8,7 @@ import myRouter from "./Routers/questionRouter.js";
 import userRouter from "./Routers/userRouter.js";
 import ConnectDB from "./db.js";
 import {verifyToken} from "./middleware/auth.js"
+import lectureRouter from "./Routers/lectureRouter.js"
 dotenv.config();
 ConnectDB();
 console.log("JWT_SECRET used:",process.env.JWT_SECRET ? "Loaded" : "MISSING");
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
 app.use("/users", userRouter);
 
 app.use("/questions", verifyToken,myRouter);
-
+app.use("/lecture", verifyToken,lectureRouter);
 
 // Socket.io
 io.on("connection", (socket) => {
