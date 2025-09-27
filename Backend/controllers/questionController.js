@@ -1,10 +1,17 @@
 import Question from "../models/question.js";
+const Roles = {
+  teacher: "teacher",
+  student: "student",
+  
+};
+
 
 export const getQuestions = async (req, res) => {
   try {
     
     const { status } = req.query;
-    console.log("request " ,req);
+    
+    
     let filter = {};
    
     if (status) filter.status = status;   // e.g., "answered" or "unanswered"
@@ -18,10 +25,15 @@ export const getQuestions = async (req, res) => {
 
 export const createQuestion = async (req, res) => {
   try {
+    
     const { text, author } = req.body;
+    const role = req.user.role;
     if (!text.trim())
       return res.status(400).json({ message: "Question cannot be empty" });
-
+    
+    if(role==Roles.teacher){
+      return res.status(400).json({ message: "Teacher Cannot ask question" });
+    }
     const newQuestion = new Question({ text, author });
     await newQuestion.save();
 
@@ -35,6 +47,10 @@ export const createQuestion = async (req, res) => {
 export const updateQuestion = async (req, res) => {
   try {
     const { status } = req.body;
+    const role = req.user.role;
+    if(role==Roles.student){
+      res.status(500).json({ message: "Student cannot update questions" });
+    }
     const updated = await Question.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -53,6 +69,9 @@ export const updateQuestion = async (req, res) => {
 
 export const clearQuestions = async (req, res) => {
   try {
+    if(role==Roles.student){
+      res.status(500).json({ message: "Student cannot update questions" });
+    }
     await Question.deleteMany({});
     req.io.emit("clearQuestions");
     res.json({ message: "All questions cleared" });
@@ -64,7 +83,9 @@ export const clearQuestions = async (req, res) => {
 export const deleteQuestion = async (req, res) => {
   try {
     const questionID = req.body._id;
-
+    if(role==Roles.student){
+      res.status(500).json({ message: "Student cannot delete questions" });
+    }
     const deleteAck = await Question.deleteOne({
       _id: questionID,
     });
