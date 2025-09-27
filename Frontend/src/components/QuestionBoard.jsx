@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import { io } from "socket.io-client";
@@ -374,6 +375,8 @@
 // export default QuestionBoard;
 
 
+=======
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -384,6 +387,10 @@ function QuestionBoard({ user }) {
   const [questions, setQuestions] = useState([]);
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("recent");
+<<<<<<< HEAD
+=======
+  const role = localStorage.getItem("role") || "student"; // ✅ get role from login
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
 
   const fetchQuestions = async () => {
     try {
@@ -399,21 +406,20 @@ function QuestionBoard({ user }) {
 
     socket.on("newQuestion", (q) => setQuestions((prev) => [q, ...prev]));
     socket.on("updateQuestion", (updated) =>
+<<<<<<< HEAD
       setQuestions((prev) =>
         prev.map((q) => (q._id === updated._id ? updated : q))
       )
+=======
+      setQuestions((prev) => prev.map((q) => (q._id === updated._id ? updated : q)))
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
     );
     socket.on("deleteQuestion", (deleted) =>
       setQuestions((prev) => prev.filter((q) => q._id !== deleted._id))
     );
     socket.on("clearQuestions", () => setQuestions([]));
 
-    return () => {
-      socket.off("newQuestion");
-      socket.off("updateQuestion");
-      socket.off("deleteQuestion");
-      socket.off("clearQuestions");
-    };
+    return () => socket.off();
   }, []);
 
   // Student: submit new question
@@ -421,7 +427,6 @@ function QuestionBoard({ user }) {
     e.preventDefault();
     if (user.role !== "student") return;
     if (!text.trim()) return;
-
     try {
       await axios.post(
         "http://localhost:5000/questions",
@@ -434,7 +439,10 @@ function QuestionBoard({ user }) {
     }
   };
 
+<<<<<<< HEAD
   // Teacher: update status
+=======
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
   const updateStatus = async (id, status) => {
     if (user.role !== "teacher") return;
     try {
@@ -448,10 +456,14 @@ function QuestionBoard({ user }) {
     }
   };
 
+<<<<<<< HEAD
   // Teacher: delete question
+=======
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
   const deleteQuestion = async (id) => {
     if (user.role !== "teacher") return;
     try {
+<<<<<<< HEAD
       await axios.post(
         "http://localhost:5000/questions/delete",
         { _id: id },
@@ -459,10 +471,23 @@ function QuestionBoard({ user }) {
       );
       setQuestions((prev) => prev.filter((q) => q._id !== id));
     } catch (err) {
+=======
+      await axios.post("http://localhost:5000/questions/delete", { _id: id });
+    } catch (err) {
+      console.error("Error deleting question:", err);
+    }
+  };
+
+  const clearAll = async () => {
+    try {
+      await axios.delete("http://localhost:5000/questions");
+    } catch (err) {
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
       console.error(err);
     }
   };
 
+<<<<<<< HEAD
   // Teacher: add answer (local for now)
   const handleAddAnswerClick = (id) => {
     setQuestions((prev) =>
@@ -499,6 +524,11 @@ function QuestionBoard({ user }) {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       return sorted.slice(0, 5);
+=======
+  const getFilteredQuestions = () => {
+    if (filter === "recent") {
+      return [...questions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+>>>>>>> 2bb48ca1b5acd2c318012eca24ac8b526a675765
     }
     return questions.filter((q) => q.status === filter);
   };
@@ -523,15 +553,12 @@ function QuestionBoard({ user }) {
       )}
 
       <div style={{ margin: "10px 0" }}>
-        <label htmlFor="filter">Filter: </label>
-        <select
-          id="filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
+        <label>Filter: </label>
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="recent">Recent</option>
           <option value="unanswered">Unanswered</option>
           <option value="answered">Answered</option>
+          <option value="important">Important</option>
         </select>
       </div>
 

@@ -18,7 +18,7 @@ const questoinSchema = new mongoose.Schema(
       },
     ],
   },
-  { timeStamp: true }
+  { timestamps: true }
 );
 
 const Question = mongoose.model("question", questoinSchema);
