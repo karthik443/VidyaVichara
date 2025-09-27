@@ -4,7 +4,7 @@ import QuestionBoard from "./components/QuestionBoard";
 function App() {
   return (
     <div>
-      <h1>VidyaVichara</h1>
+      <h1>Welcome to VidyaVichara</h1>
       <QuestionBoard />
     </div>
   );
