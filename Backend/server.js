@@ -10,9 +10,15 @@ import ConnectDB from "./db.js";
 import {verifyToken} from "./middleware/auth.js"
 import lectureRouter from "./Routers/lectureRouter.js"
 dotenv.config();
+import path from "path";
 ConnectDB();
 console.log("JWT_SECRET used:",process.env.JWT_SECRET ? "Loaded" : "MISSING");
+import fs from "fs";
 
+const uploadDir = "uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -34,7 +40,7 @@ app.use((req, res, next) => {
 // Routers
 
 app.use("/users", userRouter);
-
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/questions", verifyToken,myRouter);
 app.use("/lecture", verifyToken,lectureRouter);
 
