@@ -160,9 +160,9 @@ function Register({ setUser }) {
         {/* Registration Card */}
         <div style={styles.card}>
           <div style={styles.cardHeader}>
-            <div style={styles.cardIcon}>
-              ✨
-            </div>
+        
+              
+    
             <h2 style={styles.cardTitle}>Create Account</h2>
             <p style={styles.cardDescription}>Fill in your details to register</p>
           </div>
