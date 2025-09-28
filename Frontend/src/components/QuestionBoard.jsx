@@ -5,13 +5,30 @@ import { io } from "socket.io-client";
 const socket = io("http://localhost:5000");
 
 function QuestionBoard({ user, lecture, onLeave }) {
+  // Slideshow state
+  const [slideshowActive, setSlideshowActive] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("recent");
+  const [currentLecture, setCurrentLecture] = useState(lecture);
+  
 
   const lectureId = lecture?._id;
-  const isLectureLive = lecture?.isLive === "Live";
+useEffect(() => {
+  // ...existing question listeners...
 
+  socket.on("updateLecture", (updatedLecture) => {
+    if (updatedLecture._id === lectureId) {
+      setCurrentLecture(updatedLecture);
+    }
+  });
+
+  return () => socket.off();
+}, [lectureId]);
+
+// Use currentLecture instead of lecture
+const isLectureLive = currentLecture?.isLive === "Live";
   const fetchQuestions = async () => {
     if (!lectureId) return;
     try {
@@ -111,6 +128,17 @@ function QuestionBoard({ user, lecture, onLeave }) {
         new Date(a.createdAt || a.created_at || a.timestamp)
     );
 
+  // Get filtered questions for slideshow
+  const getFilteredQuestions = () => {
+    if (filter === "recent") {
+      return sortDesc(questions).slice(0, 5);
+    }
+    if (["unanswered", "answered", "important"].includes(filter)) {
+      return sortDesc(questions.filter((q) => q.status === filter));
+    }
+    return sortDesc(questions);
+  };
+
   const getColumnQuestions = (statusKey) => {
     if (filter === "recent") {
       const recent = sortDesc(questions).slice(0, 5);
@@ -180,101 +208,220 @@ function QuestionBoard({ user, lecture, onLeave }) {
             <option value="answered">Answered</option>
             <option value="important">Important</option>
           </select>
+          {user.role === "teacher" && (
+            <button
+              style={{ marginLeft: 12, padding: "8px 16px", background: "#6C63FF", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}
+              onClick={() => { setSlideshowActive(true); setSlideIndex(0); }}
+            >
+              Slideshow Mode
+            </button>
+          )}
         </div>
       </div>
 
-      <div style={styles.board}>
-        {columns.map((col) => {
-          const items = getColumnQuestions(col.key);
-          return (
-            <div key={col.key} style={{ ...styles.column, background: col.color }}>
-              <div style={styles.columnHeader}>
-                <strong style={{ textTransform: "capitalize" }}>{col.title}</strong>
-                <span style={styles.small}>{items.length}</span>
-              </div>
-
-              {items.length === 0 && <div style={{ color: "#666", fontSize: 13 }}>No questions</div>}
-
-              {items.map((q) => (
-                <div key={q._id} style={{ ...styles.card, background: "#fff" }}>
-                  <div style={{ fontWeight: 600, marginBottom: 8 }}>{q.text}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#666" }}>
-                    <span>Author: {q.author || "Anonymous"} • {formatDate(q.createdAt || q.created_at || q.timestamp)}</span>
-                    <span>{q.status}</span>
-                  </div>
-
-                  {q.answer && q.answer !== "Not Answerd" && (
-                    <div style={{ marginTop: 10, color: "#116530", background: "#ecf8ee", padding: 8, borderRadius: 8 }}>
-                      <strong>Answer:</strong> {q.answer}
-                    </div>
-                  )}
-
-                  {q.resources && q.resources.length > 0 && (
-                    <div style={{ marginTop: 8 }}>
-                      <strong>Resources:</strong>
-                      <ul style={{ marginTop: 4 }}>
-                        {q.resources.map((r, idx) => (
-                          <li key={idx}>
-                            <a href={`http://localhost:5000${r.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#0ea5a4", textDecoration: "underline" }}>
-                              {r.filename}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {user.role === "teacher" && (
-                    <div style={{ marginTop: 8 }}>
-                      {/* Answer + File */}
-                      <div style={{ display: "flex", gap: 4, marginBottom: 4 }}>
-                        <input
-                          type="text"
-                          placeholder="Type answer..."
-                          value={q.tempAnswer || ""}
-                          onChange={(e) =>
-                            setQuestions((prev) =>
-                              prev.map((item) =>
-                                item._id === q._id ? { ...item, tempAnswer: e.target.value } : item
-                              )
-                            )
-                          }
-                          style={{ flex: 1, padding: 4, borderRadius: 6, border: "1px solid #ccc" }}
-                        />
-                        <input
-                          type="file"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            setQuestions((prev) =>
-                              prev.map((item) =>
-                                item._id === q._id ? { ...item, tempFile: file } : item
-                              )
-                            );
-                          }}
-                        />
-                        <button
-                          onClick={() => updateStatus(q._id, "answered", q.tempAnswer, q.tempFile)}
-                          style={{ background: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 6 }}
-                        >
-                          Answer
-                        </button>
-                      </div>
-
-                      {/* Status Buttons */}
-                      <div style={{ display: "flex", gap: 4 }}>
-                        <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
-                        <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
-                        <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
-                        <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
-                      </div>
-                    </div>
-                  )}
+      {/* Slideshow UI */}
+      {slideshowActive && user.role === "teacher" && (
+        (() => {
+          const filteredQuestions = getFilteredQuestions();
+          if (filteredQuestions.length === 0) {
+            return (
+              <div style={{ textAlign: "center", margin: "32px auto" }}>
+                <div className="card" style={{ display: "inline-block", minWidth: 400 }}>
+                  <h3>No questions for this filter.</h3>
+                  <button style={{ marginTop: 16 }} onClick={() => setSlideshowActive(false)}>Exit Slideshow</button>
                 </div>
-              ))}
+              </div>
+            );
+          }
+          const q = filteredQuestions[slideIndex];
+          return (
+            <div style={{ textAlign: "center", margin: "32px auto" }}>
+              <div className="card" style={{ display: "inline-block", minWidth: 400, padding: 24 }}>
+                <h3>{q.text}</h3>
+                <div style={{ margin: "12px 0", fontSize: 14, color: "#666" }}>
+                  Author: {q.author || "Anonymous"} • {formatDate(q.createdAt || q.created_at || q.timestamp)}
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <span style={{ fontWeight: 600 }}>Status:</span> {q.status}
+                </div>
+                {q.answer && q.answer !== "Not Answerd" && (
+                  <div style={{ marginTop: 10, color: "#116530", background: "#ecf8ee", padding: 8, borderRadius: 8 }}>
+                    <strong>Answer:</strong> {q.answer}
+                  </div>
+                )}
+                {q.resources && q.resources.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <strong>Resources:</strong>
+                    <ul style={{ marginTop: 4 }}>
+                      {q.resources.map((r, idx) => (
+                        <li key={idx}>
+                          <a href={`http://localhost:5000${r.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#0ea5a4", textDecoration: "underline" }}>
+                            {r.filename}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {/* Mark/Answer UI */}
+                <div style={{ marginTop: 16 }}>
+                  <input
+                    type="text"
+                    placeholder="Type answer..."
+                    value={q.tempAnswer || ""}
+                    onChange={(e) =>
+                      setQuestions((prev) =>
+                        prev.map((item) =>
+                          item._id === q._id ? { ...item, tempAnswer: e.target.value } : item
+                        )
+                      )
+                    }
+                    style={{ width: "60%", padding: 6, borderRadius: 6, border: "1px solid #ccc" }}
+                  />
+                  <input
+                    type="file"
+                    style={{ marginLeft: 8 }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      setQuestions((prev) =>
+                        prev.map((item) =>
+                          item._id === q._id ? { ...item, tempFile: file } : item
+                        )
+                      );
+                    }}
+                  />
+                  <button
+                    onClick={() => updateStatus(q._id, "answered", q.tempAnswer, q.tempFile)}
+                    style={{ background: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 6, marginLeft: 8 }}
+                  >
+                    Answer
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 12 }}>
+                  <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
+                  <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
+                  <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
+                  <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
+                </div>
+                <div style={{ marginTop: 18 }}>
+                  <button
+                    onClick={() => setSlideIndex(i => Math.max(i - 1, 0))}
+                    disabled={slideIndex === 0}
+                    style={{ marginRight: 12 }}
+                  >
+                    Prev
+                  </button>
+                  <span style={{ margin: "0 16px" }}>{slideIndex + 1} / {filteredQuestions.length}</span>
+                  <button
+                    onClick={() => setSlideIndex(i => Math.min(i + 1, filteredQuestions.length - 1))}
+                    disabled={slideIndex === filteredQuestions.length - 1}
+                    style={{ marginLeft: 12 }}
+                  >
+                    Next
+                  </button>
+                </div>
+                <button style={{ marginTop: 16 }} onClick={() => setSlideshowActive(false)}>Exit Slideshow</button>
+              </div>
             </div>
           );
-        })}
-      </div>
+        })()
+      )}
+
+      {/* Normal board UI hidden in slideshow mode */}
+      {!slideshowActive && (
+        <div style={styles.board}>
+          {columns.map((col) => {
+            const items = getColumnQuestions(col.key);
+            return (
+              <div key={col.key} style={{ ...styles.column, background: col.color }}>
+                <div style={styles.columnHeader}>
+                  <strong style={{ textTransform: "capitalize" }}>{col.title}</strong>
+                  <span style={styles.small}>{items.length}</span>
+                </div>
+
+                {items.length === 0 && <div style={{ color: "#666", fontSize: 13 }}>No questions</div>}
+
+                {items.map((q) => (
+                  <div key={q._id} style={{ ...styles.card, background: "#fff" }}>
+                    <div style={{ fontWeight: 600, marginBottom: 8 }}>{q.text}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#666" }}>
+                      <span>Author: {q.author || "Anonymous"} • {formatDate(q.createdAt || q.created_at || q.timestamp)}</span>
+                      <span>{q.status}</span>
+                    </div>
+
+                    {q.answer && q.answer !== "Not Answerd" && (
+                      <div style={{ marginTop: 10, color: "#116530", background: "#ecf8ee", padding: 8, borderRadius: 8 }}>
+                        <strong>Answer:</strong> {q.answer}
+                      </div>
+                    )}
+
+                    {q.resources && q.resources.length > 0 && (
+                      <div style={{ marginTop: 8 }}>
+                        <strong>Resources:</strong>
+                        <ul style={{ marginTop: 4 }}>
+                          {q.resources.map((r, idx) => (
+                            <li key={idx}>
+                              <a href={`http://localhost:5000${r.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#0ea5a4", textDecoration: "underline" }}>
+                                {r.filename}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {user.role === "teacher" && (
+                      <div style={{ marginTop: 8 }}>
+                        {/* Answer + File */}
+                        <div style={{ display: "flex", gap: 4, marginBottom: 4 }}>
+                          <input
+                            type="text"
+                            placeholder="Type answer..."
+                            value={q.tempAnswer || ""}
+                            onChange={(e) =>
+                              setQuestions((prev) =>
+                                prev.map((item) =>
+                                  item._id === q._id ? { ...item, tempAnswer: e.target.value } : item
+                                )
+                              )
+                            }
+                            style={{ flex: 1, padding: 4, borderRadius: 6, border: "1px solid #ccc" }}
+                          />
+                          <input
+                            type="file"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              setQuestions((prev) =>
+                                prev.map((item) =>
+                                  item._id === q._id ? { ...item, tempFile: file } : item
+                                )
+                              );
+                            }}
+                          />
+                          <button
+                            onClick={() => updateStatus(q._id, "answered", q.tempAnswer, q.tempFile)}
+                            style={{ background: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 6 }}
+                          >
+                            Answer
+                          </button>
+                        </div>
+
+                        {/* Status Buttons */}
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
+                          <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
+                          <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
+                          <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
