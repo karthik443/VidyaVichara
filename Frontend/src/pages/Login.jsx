@@ -248,7 +248,7 @@ function Login({ setUser }) {
             }}
           >
             <div style={styles.cardHeader}>
-              <div style={styles.cardIcon}>👥</div>
+              <div style={styles.cardIcon}>🎓</div>
               <h3 style={styles.cardTitle}>Student Login</h3>
               <p style={styles.cardDescription}>
                 Login with your credentials
