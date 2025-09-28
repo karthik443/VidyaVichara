@@ -208,6 +208,7 @@ import "./Dashboard.css"; // assuming unified CSS
 const socket = io("http://localhost:5000");
 
 function LectureBoard({ user }) {
+  
   const [lectures, setLectures] = useState([]);
   const [title, setTitle] = useState("");
   const [joinedLecture, setJoinedLecture] = useState(null);
@@ -238,11 +239,24 @@ function LectureBoard({ user }) {
     if (!title.trim()) return;
 
     try {
+<<<<<<< HEAD
       const token = sessionStorage.getItem("token");
       await axios.post(
         "http://localhost:5000/lecture",
         { title },
         { headers: { Authorization: `Bearer ${token}` } }
+=======
+      const userId = user._id;
+     
+      await axios.post(
+        "http://localhost:5000/lecture",
+        { title, userId,userName },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+>>>>>>> 699d1b7364f70d9ab4df38b8b2d4b2a0c828be56
       );
       setTitle("");
       fetchLectures();
@@ -354,6 +368,7 @@ function LectureBoard({ user }) {
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Lecture list */}
       {/* <div className="page-grid">
         {lectures.map((l) => (
@@ -470,6 +485,63 @@ function LectureBoard({ user }) {
 
 
       {/* Empty state */}
+=======
+   <div className="page-grid">
+  {lectures.map((l) => (
+    <div key={l._id} className="card p-4 shadow rounded-2xl">
+      {/* Lecture Title */}
+      <div className="lecture-title text-xl font-bold">{l.title}</div>
+
+      {/* Status Badge */}
+      <span
+        className={`lecture-status inline-block px-2 py-1 mt-1 rounded-full text-sm font-medium ${
+          l.isLive === "Live" ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-600"
+        }`}
+      >
+        {l.isLive}
+      </span>
+
+      {/* Meta Info */}
+      <div className="lecture-meta text-gray-600 mt-2">
+        By: <span className="font-medium">{l.lecturerName}</span>
+      </div>
+
+      {/* Start/End Time (if available) */}
+      <div className="lecture-time text-sm text-gray-500 mt-1">
+        {l.startTime && (
+          <div>
+            🟢 <strong>Start:</strong>{" "}
+            {new Date(l.startTime).toLocaleString()}
+          </div>
+        )}
+        {l.endTime && (
+          <div>
+            🔴 <strong>End:</strong>{" "}
+            {new Date(l.endTime).toLocaleString()}
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="lecture-actions mt-4 flex gap-2">
+        <button className="btn btn-primary" onClick={() => JoinLecture(l)}>
+          Join Lecture
+        </button>
+        {user.role === "teacher" && l.isLive === "Live" && (
+          <button
+            className="btn btn-secondary"
+            onClick={() => handleEndLecture(l._id)}
+          >
+            End
+          </button>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+
+>>>>>>> 699d1b7364f70d9ab4df38b8b2d4b2a0c828be56
       {lectures.length === 0 && (
         <div className="empty-state">
           <h3>No lectures yet</h3>

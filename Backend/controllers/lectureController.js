@@ -91,7 +91,7 @@ export const createLecture = async (req, res) => {
     const accessId = nanoid(6); // generate 6-character code
 
     const lecture = new Lecture({
-      lecturerName: req.user.name || "Anonymous",
+      lecturerName: req.user.userName || "Anonymous",
       title,
       startTime: Date.now(),
       creatorId,
