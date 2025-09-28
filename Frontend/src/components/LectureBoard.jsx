@@ -219,7 +219,7 @@ function LectureBoard({ user }) {
      
       await axios.post(
         "http://localhost:5000/lecture",
-        { title, userId,userName },
+        { title, userId },
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
