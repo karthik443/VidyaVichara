@@ -213,6 +213,7 @@ function LectureBoard({ user }) {
                   style={{
                     fontFamily: "monospace",
                     background: "#f3f3f3",
+                    color:"white",
                     padding: "2px 8px",
                     borderRadius: 6,
                   }}
