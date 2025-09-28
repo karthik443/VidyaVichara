@@ -159,21 +159,27 @@ const isLectureLive = currentLecture?.isLive === "Live";
   };
 
   const styles = {
-    page: { minHeight: "100vh", padding: "28px", fontFamily: '"Inter", system-ui', background: "#f8f8f8" },
-    header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 },
-    title: { fontSize: 22, fontWeight: 700, color: "#222" },
-    controls: { display: "flex", gap: 10, alignItems: "center" },
-    input: { padding: "8px 10px", width: 420, borderRadius: 8, border: "1px solid #e0e0e0" },
-    askButton: { padding: "8px 12px", borderRadius: 8, background: "#6C63FF", color: "#fff", border: "none", cursor: "pointer" },
-    board: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 },
-    column: { borderRadius: 14, padding: 14, minHeight: 300, boxShadow: "0 6px 18px rgba(16,24,40,0.06)" },
-    columnHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
-    card: { padding: 12, borderRadius: 10, marginBottom: 12, boxShadow: "0 4px 8px rgba(16,24,40,0.06)" },
-    small: { color: "#666", fontSize: 12 },
-    pillBtn: { padding: "6px 8px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12 },
-    teacherActions: { display: "flex", gap: 8, marginTop: 8 },
-    leaveBtn: { marginBottom: 20, padding: "6px 12px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
-  };
+  page: {
+    minHeight: "100vh",
+    padding: "28px",
+    fontFamily: '"Inter", system-ui',
+    background: "linear-gradient(135deg, #e6d4ff, #ffffff)", // corrected
+  },
+  header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 },
+  title: { fontSize: 22, fontWeight: 700, color: "#222" },
+  controls: { display: "flex", gap: 10, alignItems: "center" },
+  input: { padding: "8px 10px", width: 420, borderRadius: 8, border: "1px solid #e0e0e0" },
+  askButton: { padding: "8px 12px", borderRadius: 8, background: "#6C63FF", color: "#fff", border: "none", cursor: "pointer" },
+  board: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 },
+  column: { borderRadius: 14, padding: 14, minHeight: 300, boxShadow: "0 6px 18px rgba(16,24,40,0.06)" },
+  columnHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
+  card: { padding: 12, borderRadius: 10, marginBottom: 12, boxShadow: "0 4px 8px rgba(16,24,40,0.06)" },
+  small: { color: "#666", fontSize: 12 },
+  pillBtn: { padding: "6px 8px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12 },
+  teacherActions: { display: "flex", gap: 8, marginTop: 8 },
+  leaveBtn: { marginBottom: 20, padding: "6px 12px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
+};
+
 
   return (
     <div style={styles.page}>
