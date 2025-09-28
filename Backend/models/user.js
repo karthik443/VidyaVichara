@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
     isBlocked: { type: Boolean, default: false },
+    joinedLectures: { type: [String], default: [] },
   },
   { timestamps: true } 
 );
