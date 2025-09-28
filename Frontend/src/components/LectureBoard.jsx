@@ -37,10 +37,16 @@ function LectureBoard({ user }) {
 
     try {
       const token = sessionStorage.getItem("token");
+      console.log(user);
+      const userId = user._id;
       await axios.post(
         "http://localhost:5000/lecture",
-        { title },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { title, userId },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
       );
       setTitle("");
       fetchLectures();
