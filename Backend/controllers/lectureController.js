@@ -64,9 +64,9 @@ export const createLecture = async (req, res) => {
     if (role === Roles.student) {
       return res.status(403).json({ message: "Students cannot create lectures" });
     }
-
+   
     const lecture = new Lecture({
-      lecturerName: req.user.name || "Anonymous",
+      lecturerName: req.user.userName || "Anonymous",
       title,
       startTime: Date.now(),
       creatorId
