@@ -491,10 +491,10 @@ const isLectureLive = currentLecture?.isLive === "Live";
 
                         {/* Status Buttons */}
                         <div style={{ display: "flex", gap: 4 }}>
-                          <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
-                          <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
-                          <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
-                          <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
+                          <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, color: "#056626ff" }}>Answered</button>
+                          <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn,color: "#1c34ebff" }}>Important</button>
+                          {/* <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button> */}
+                          <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn,  color: "#ce2929ff" }}>Delete</button>
                         </div>
                       </div>
                     )}
