@@ -62,8 +62,9 @@ function Navbar({ user, setUser }) {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "10px 20px",
-        background: "#1e1e1e", // dark navbar background to make gradient text pop
-        color: "#fff",
+        background: "#ffffffff", // dark navbar background to make gradient text pop
+        color: "#000000ff",
+        height:"60px"
       }}
     >
       <h3
