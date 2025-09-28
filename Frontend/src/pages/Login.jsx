@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-function Login({ setUser, onSwitchToRegister }) {
+function Login({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,154 +24,133 @@ function Login({ setUser, onSwitchToRegister }) {
     }
   };
 
-  // Shared styles object
+  const primary = "#8b5cf6";   // base color
+  const primaryHover = "#7c3aed"; 
+  const primaryActive = "#6d28d9"; 
+
   const styles = {
     container: {
-      position: 'fixed',
+      position: "fixed",
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      minHeight: '100vh',
-      width: '100vw',
-      background: 'linear-gradient(135deg, #faf5ff 0%, #ffffff 50%, #eff6ff 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      boxSizing: 'border-box',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      minHeight: "100vh",
+      width: "100vw",
+      background:
+        "linear-gradient(135deg, #faf5ff 0%, #ffffff 50%, #eff6ff 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "20px",
+      boxSizing: "border-box",
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     },
     contentWrapper: {
-      width: '100%',
-      maxWidth: '1000px',
-      textAlign: 'center'
+      width: "100%",
+      maxWidth: "1000px",
+      textAlign: "center",
     },
     header: {
-      marginBottom: '48px'
+      marginBottom: "48px",
     },
     title: {
-      fontSize: '48px',
-      fontWeight: '700',
-      color: '#1f2937',
-      margin: '0 0 16px 0',
-      lineHeight: '1.2'
+      fontSize: "48px",
+      fontWeight: "700",
+      color: "#1f2937",
+      margin: "0 0 16px 0",
+      lineHeight: "1.2",
     },
     subtitle: {
-      fontSize: '20px',
-      color: '#6b7280',
-      margin: '0'
+      fontSize: "20px",
+      color: "#6b7280",
+      margin: "0",
     },
     cardsGrid: {
-      display: 'grid',
-      gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '1fr 1fr',
-      gap: '32px',
-      maxWidth: '800px',
-      margin: '0 auto'
+      display: "grid",
+      gridTemplateColumns: window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+      gap: "32px",
+      maxWidth: "800px",
+      margin: "0 auto",
     },
     card: {
-      background: '#ffffff',
-      borderRadius: '16px',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-      padding: '32px',
-      transition: 'all 0.3s ease',
-      border: '2px solid #e5e7eb'
+      background: "#ffffff",
+      borderRadius: "16px",
+      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+      padding: "32px",
+      transition: "all 0.3s ease",
+      border: "2px solid #e5e7eb",
     },
     cardActive: {
-      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
-      borderColor: userType === "teacher" ? '#8b5cf6' : '#3b82f6'
+      boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+      borderColor: primary,
     },
     cardHeader: {
-      textAlign: 'center',
-      marginBottom: '32px'
+      textAlign: "center",
+      marginBottom: "32px",
     },
     cardIcon: {
-      width: '64px',
-      height: '64px',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 16px',
-      fontSize: '24px',
-      backgroundColor: userType === "teacher" ? '#f3e8ff' : '#dbeafe',
-      color: userType === "teacher" ? '#8b5cf6' : '#3b82f6'
+      width: "64px",
+      height: "64px",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      margin: "0 auto 16px",
+      fontSize: "24px",
+      backgroundColor: "#f3e8ff",
+      color: primary,
     },
     cardTitle: {
-      fontSize: '24px',
-      fontWeight: '700',
-      color: '#1f2937',
-      margin: '0 0 8px 0'
+      fontSize: "24px",
+      fontWeight: "700",
+      color: "#1f2937",
+      margin: "0 0 8px 0",
     },
     cardDescription: {
-      color: '#6b7280',
-      margin: '0'
+      color: "#6b7280",
+      margin: "0",
     },
     form: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '16px'
+      display: "flex",
+      flexDirection: "column",
+      gap: "16px",
     },
     input: {
-      width: '100%',
-      padding: '12px 16px',
-      border: '1px solid #d1d5db',
-      borderRadius: '8px',
-      fontSize: '16px',
-      transition: 'all 0.2s ease',
-      boxSizing: 'border-box',
-      outline: 'none'
+      width: "100%",
+      padding: "12px 16px",
+      border: "1px solid #d1d5db",
+      borderRadius: "8px",
+      fontSize: "16px",
+      transition: "all 0.2s ease",
+      boxSizing: "border-box",
+      outline: "none",
     },
     button: {
-      width: '100%',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      fontSize: '16px',
-      fontWeight: '500',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      outline: 'none'
-    },
-    buttonPrimary: {
-      backgroundColor: userType === "teacher" ? '#8b5cf6' : '#3b82f6',
-      color: '#ffffff'
-    },
-    buttonSecondary: {
-      backgroundColor: '#f3f4f6',
-      color: '#374151',
-      border: '2px solid #e5e7eb'
-    },
-    linkButton: {
-      background: 'none',
-      border: 'none',
-      color: '#8b5cf6',
-      fontSize: '14px',
-      cursor: 'pointer',
-      textDecoration: 'underline',
-      padding: '8px',
-      marginTop: '16px'
+      width: "100%",
+      padding: "12px 16px",
+      borderRadius: "8px",
+      fontSize: "16px",
+      fontWeight: "500",
+      border: "none",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      outline: "none",
+      backgroundColor: primary,
+      color: "#fff",
     },
     errorMessage: {
-      marginTop: '24px',
-      backgroundColor: '#fef2f2',
-      border: '1px solid #fecaca',
-      color: '#b91c1c',
-      padding: '16px',
-      borderRadius: '8px',
-      textAlign: 'center',
-      maxWidth: '400px',
-      margin: '24px auto 0'
+      marginTop: "24px",
+      backgroundColor: "#fef2f2",
+      border: "1px solid #fecaca",
+      color: "#b91c1c",
+      padding: "16px",
+      borderRadius: "8px",
+      textAlign: "center",
+      maxWidth: "400px",
+      margin: "24px auto 0",
     },
-    footer: {
-      marginTop: '32px',
-      textAlign: 'center'
-    },
-    footerText: {
-      color: '#6b7280',
-      fontSize: '16px',
-      margin: '0'
-    }
   };
 
   return (
@@ -180,22 +159,26 @@ function Login({ setUser, onSwitchToRegister }) {
         {/* Header */}
         <div style={styles.header}>
           <h1 style={styles.title}>VidyaVichara</h1>
-          <p style={styles.subtitle}>Interactive Learning Through Sticky Notes</p>
+          <p style={styles.subtitle}>
+            Interactive Learning Through Sticky Notes
+          </p>
         </div>
 
         {/* Cards Grid */}
         <div style={styles.cardsGrid}>
           {/* Teacher Card */}
-          <div style={{
-            ...styles.card,
-            ...(userType === "teacher" ? styles.cardActive : {})
-          }}>
+          <div
+            style={{
+              ...styles.card,
+              ...(userType === "teacher" ? styles.cardActive : {}),
+            }}
+          >
             <div style={styles.cardHeader}>
-              <div style={styles.cardIcon}>
-                📚
-              </div>
+              <div style={styles.cardIcon}>📚</div>
               <h3 style={styles.cardTitle}>Teacher Login</h3>
-              <p style={styles.cardDescription}>Create and manage your lecture boards</p>
+              <p style={styles.cardDescription}>
+                Create and manage your lecture boards
+              </p>
             </div>
 
             {userType === "teacher" ? (
@@ -207,8 +190,6 @@ function Login({ setUser, onSwitchToRegister }) {
                   placeholder="Email address"
                   required
                   style={styles.input}
-                  onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 />
                 <input
                   type="password"
@@ -217,14 +198,22 @@ function Login({ setUser, onSwitchToRegister }) {
                   placeholder="Password"
                   required
                   style={styles.input}
-                  onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 />
-                <button 
-                  type="submit" 
-                  style={{...styles.button, ...styles.buttonPrimary}}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#7c3aed'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#8b5cf6'}
+                <button
+                  type="submit"
+                  style={styles.button}
+                  onMouseEnter={(e) =>
+                    (e.target.style.backgroundColor = primaryHover)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.target.style.backgroundColor = primary)
+                  }
+                  onMouseDown={(e) =>
+                    (e.target.style.backgroundColor = primaryActive)
+                  }
+                  onMouseUp={(e) =>
+                    (e.target.style.backgroundColor = primaryHover)
+                  }
                 >
                   Continue as Teacher
                 </button>
@@ -232,9 +221,19 @@ function Login({ setUser, onSwitchToRegister }) {
             ) : (
               <button
                 onClick={() => setUserType("teacher")}
-                style={{...styles.button, ...styles.buttonPrimary}}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#7c3aed'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#8b5cf6'}
+                style={styles.button}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = primaryHover)
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = primary)
+                }
+                onMouseDown={(e) =>
+                  (e.target.style.backgroundColor = primaryActive)
+                }
+                onMouseUp={(e) =>
+                  (e.target.style.backgroundColor = primaryHover)
+                }
               >
                 Continue as Teacher
               </button>
@@ -242,16 +241,18 @@ function Login({ setUser, onSwitchToRegister }) {
           </div>
 
           {/* Student Card */}
-          <div style={{
-            ...styles.card,
-            ...(userType === "student" ? styles.cardActive : {})
-          }}>
+          <div
+            style={{
+              ...styles.card,
+              ...(userType === "student" ? styles.cardActive : {}),
+            }}
+          >
             <div style={styles.cardHeader}>
-              <div style={styles.cardIcon}>
-                👥
-              </div>
+              <div style={styles.cardIcon}>👥</div>
               <h3 style={styles.cardTitle}>Student Login</h3>
-              <p style={styles.cardDescription}>Login with your credentials</p>
+              <p style={styles.cardDescription}>
+                Login with your credentials
+              </p>
             </div>
 
             {userType === "student" ? (
@@ -263,8 +264,6 @@ function Login({ setUser, onSwitchToRegister }) {
                   placeholder="Email address"
                   required
                   style={styles.input}
-                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 />
                 <input
                   type="password"
@@ -273,14 +272,22 @@ function Login({ setUser, onSwitchToRegister }) {
                   placeholder="Password"
                   required
                   style={styles.input}
-                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 />
-                <button 
-                  type="submit" 
-                  style={{...styles.button, ...styles.buttonPrimary}}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                <button
+                  type="submit"
+                  style={styles.button}
+                  onMouseEnter={(e) =>
+                    (e.target.style.backgroundColor = primaryHover)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.target.style.backgroundColor = primary)
+                  }
+                  onMouseDown={(e) =>
+                    (e.target.style.backgroundColor = primaryActive)
+                  }
+                  onMouseUp={(e) =>
+                    (e.target.style.backgroundColor = primaryHover)
+                  }
                 >
                   Login as Student
                 </button>
@@ -288,9 +295,19 @@ function Login({ setUser, onSwitchToRegister }) {
             ) : (
               <button
                 onClick={() => setUserType("student")}
-                style={{...styles.button, ...styles.buttonSecondary}}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+                style={styles.button}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = primaryHover)
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = primary)
+                }
+                onMouseDown={(e) =>
+                  (e.target.style.backgroundColor = primaryActive)
+                }
+                onMouseUp={(e) =>
+                  (e.target.style.backgroundColor = primaryHover)
+                }
               >
                 Login as Student
               </button>
@@ -299,13 +316,7 @@ function Login({ setUser, onSwitchToRegister }) {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <p style={styles.errorMessage}>{error}</p>
-        )}
-
-        {/* Link to Register */}
-        
-      
+        {error && <p style={styles.errorMessage}>{error}</p>}
       </div>
     </div>
   );
