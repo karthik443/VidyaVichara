@@ -73,11 +73,18 @@ export const loginUser = async (req, res) => {
 
     // Find user by email
     const user = await User.findOne({ email });
+    console.log(user,"USER ACCOUNT")
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     // Compare plaintext password with hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    // const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = password===user.password;
+    console.log(password,user.password);
+    if (!isMatch){
+      console.log("NOTMATCH")
+      return res.status(400).json({ message: "Invalid credentials" });
+      
+    } 
 
     // Create JWT token
     const token = jwt.sign(
