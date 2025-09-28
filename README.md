@@ -3,6 +3,7 @@ vidhyavichara project --
 
 # Problem statement: 
 
+    A consistent Application where teacher can create lectures and students can join and post questions
 # Tech stack : 
 
     Frontend : React
@@ -12,9 +13,16 @@ vidhyavichara project --
 
 
 
-# Requirements : 
+# Functionalites : 
 
+Teacher can create lectures
+student can post question 
+teacher can answer question 
+teacher can post resources 
+teacher / student can login 
+Both of them have seperate privilages of web page 
 
+  
 
 # Approach  (Techical): 
 
@@ -35,4 +43,3 @@ vidhyavichara project --
     post questions in lectures using socket,
     see the resources and answers added by teachers .. 
     
-# Limitations: 
