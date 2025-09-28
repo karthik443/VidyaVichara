@@ -3,6 +3,7 @@ import { nanoid } from "nanoid"; // npm i nanoid
 const Roles = {
   teacher: "teacher",
   student: "student",
+
   
 };
 
@@ -36,6 +37,7 @@ export const getLecture = async (req, res) => {
       // Student sees only lectures they joined
       filter.joinedLectures = userId;
     }
+    
 
     const lectures = await Lecture.find(filter).sort({ createdAt: -1 });
     res.json(lectures);
@@ -83,8 +85,9 @@ export const createLecture = async (req, res) => {
     const creatorId = req.user.id.toString();
 
     if (!title?.trim()) return res.status(400).json({ message: "Title cannot be empty" });
-    if (role === Roles.student) return res.status(403).json({ message: "Students cannot create lectures" });
-
+  if (role === Roles.student)
+    return res.status(403).json({ message: "Not allowed to create lectures" });
+  
     const accessId = nanoid(6); // generate 6-character code
 
     const lecture = new Lecture({
@@ -137,9 +140,8 @@ export const endLecture = async (req, res) => {
     const lectureId = req.params.id;
     const role = req.user.role;
 
-    if (role === Roles.student) {
-      return res.status(403).json({ message: "Students cannot end lectures" });
-    }
+    if (role === Roles.student)
+    return res.status(403).json({ message: "Not allowed to end lectures" });
 
     const updated = await Lecture.findByIdAndUpdate(
       lectureId,
