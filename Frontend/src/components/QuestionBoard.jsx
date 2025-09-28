@@ -232,9 +232,37 @@ const isLectureLive = currentLecture?.isLive === "Live";
           if (filteredQuestions.length === 0) {
             return (
               <div style={{ textAlign: "center", margin: "32px auto" }}>
-                <div className="card" style={{ display: "inline-block", minWidth: 400 }}>
-                  <h3>No questions for this filter.</h3>
-                  <button style={{ marginTop: 16 }} onClick={() => setSlideshowActive(false)}>Exit Slideshow</button>
+                <div
+                  className="card"
+                  style={{
+                    display: "inline-block",
+                    minWidth: 420,
+                    background: "#fff",
+                    color: "#222",
+                    borderRadius: 18,
+                    boxShadow: "0 8px 32px rgba(16,24,40,0.10)",
+                    padding: "36px 32px",
+                    gap: 18,
+                    fontFamily: 'Inter, system-ui',
+                  }}
+                >
+                  <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>No questions for this filter.</h3>
+                  <button
+                    style={{
+                      marginTop: 18,
+                      padding: "8px 20px",
+                      background: "#6C63FF",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 8,
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setSlideshowActive(false)}
+                  >
+                    Exit Slideshow
+                  </button>
                 </div>
               </div>
             );
@@ -242,26 +270,45 @@ const isLectureLive = currentLecture?.isLive === "Live";
           const q = filteredQuestions[slideIndex];
           return (
             <div style={{ textAlign: "center", margin: "32px auto" }}>
-              <div className="card" style={{ display: "inline-block", minWidth: 400, padding: 24 }}>
-                <h3>{q.text}</h3>
-                <div style={{ margin: "12px 0", fontSize: 14, color: "#666" }}>
-                  Author: {q.author || "Anonymous"} • {formatDate(q.createdAt || q.created_at || q.timestamp)}
+              <div
+                className="card"
+                style={{
+                  display: "inline-block",
+                  minWidth: 420,
+                  background: "#fff",
+                  color: "#222",
+                  borderRadius: 18,
+                  boxShadow: "0 8px 32px rgba(16,24,40,0.10)",
+                  padding: "36px 32px",
+                  gap: 18,
+                  fontFamily: 'Inter, system-ui',
+                  textAlign: "left",
+                }}
+              >
+                <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>{q.text}</h3>
+                <div style={{ margin: "10px 0 16px 0", fontSize: 15, color: "#666" }}>
+                  Author: <span style={{ fontWeight: 600 }}>{q.author || "Anonymous"}</span> • {formatDate(q.createdAt || q.created_at || q.timestamp)}
                 </div>
-                <div style={{ marginBottom: 10 }}>
-                  <span style={{ fontWeight: 600 }}>Status:</span> {q.status}
+                <div style={{ marginBottom: 12, fontSize: 15 }}>
+                  <span style={{ fontWeight: 600 }}>Status:</span> <span style={{ textTransform: "capitalize" }}>{q.status}</span>
                 </div>
                 {q.answer && q.answer !== "Not Answerd" && (
-                  <div style={{ marginTop: 10, color: "#116530", background: "#ecf8ee", padding: 8, borderRadius: 8 }}>
+                  <div style={{ marginTop: 12, color: "#116530", background: "#ecf8ee", padding: 10, borderRadius: 10, fontSize: 15 }}>
                     <strong>Answer:</strong> {q.answer}
                   </div>
                 )}
                 {q.resources && q.resources.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
+                  <div style={{ marginTop: 10, fontSize: 15 }}>
                     <strong>Resources:</strong>
-                    <ul style={{ marginTop: 4 }}>
+                    <ul style={{ marginTop: 6 }}>
                       {q.resources.map((r, idx) => (
                         <li key={idx}>
-                          <a href={`http://localhost:5000${r.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#0ea5a4", textDecoration: "underline" }}>
+                          <a
+                            href={`http://localhost:5000${r.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#0ea5a4", textDecoration: "underline", fontWeight: 500 }}
+                          >
                             {r.filename}
                           </a>
                         </li>
@@ -270,7 +317,7 @@ const isLectureLive = currentLecture?.isLive === "Live";
                   </div>
                 )}
                 {/* Mark/Answer UI */}
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center" }}>
                   <input
                     type="text"
                     placeholder="Type answer..."
@@ -282,7 +329,7 @@ const isLectureLive = currentLecture?.isLive === "Live";
                         )
                       )
                     }
-                    style={{ width: "60%", padding: 6, borderRadius: 6, border: "1px solid #ccc" }}
+                    style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1px solid #e0e0e0", fontSize: 15 }}
                   />
                   <input
                     type="file"
@@ -298,35 +345,65 @@ const isLectureLive = currentLecture?.isLive === "Live";
                   />
                   <button
                     onClick={() => updateStatus(q._id, "answered", q.tempAnswer, q.tempFile)}
-                    style={{ background: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 6, marginLeft: 8 }}
+                    style={{ background: "#22c55e", color: "#fff", padding: "8px 18px", borderRadius: 8, marginLeft: 8, fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}
                   >
                     Answer
                   </button>
                 </div>
-                <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 12 }}>
-                  <button onClick={() => updateStatus(q._id, "answered")} style={{ ...styles.pillBtn, background: "#0ea5a4", color: "#fff" }}>Answered</button>
-                  <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff" }}>Important</button>
-                  <button onClick={() => updateStatus(q._id, "unanswered")} style={{ ...styles.pillBtn, background: "#e0e0e0", color: "#333" }}>Unanswered</button>
-                  <button onClick={() => deleteQuestion(q._id)} style={{ ...styles.pillBtn, background: "#ef4444", color: "#fff" }}>Delete</button>
+                <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
+                  <button onClick={() => updateStatus(q._id, "important")} style={{ ...styles.pillBtn, background: "#f43f5e", color: "#fff", fontWeight: 600, fontSize: 14 }}>Important</button>
                 </div>
-                <div style={{ marginTop: 18 }}>
+                <div style={{ marginTop: 24, display: "flex", alignItems: "center", justifyContent: "center", gap: 18 }}>
                   <button
                     onClick={() => setSlideIndex(i => Math.max(i - 1, 0))}
                     disabled={slideIndex === 0}
-                    style={{ marginRight: 12 }}
+                    style={{
+                      padding: "8px 18px",
+                      background: slideIndex === 0 ? "#e0e0e0" : "#6C63FF",
+                      color: slideIndex === 0 ? "#999" : "#fff",
+                      border: "none",
+                      borderRadius: 8,
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: slideIndex === 0 ? "not-allowed" : "pointer",
+                    }}
                   >
                     Prev
                   </button>
-                  <span style={{ margin: "0 16px" }}>{slideIndex + 1} / {filteredQuestions.length}</span>
+                  <span style={{ margin: "0 16px", fontWeight: 600, fontSize: 15 }}>{slideIndex + 1} / {filteredQuestions.length}</span>
                   <button
                     onClick={() => setSlideIndex(i => Math.min(i + 1, filteredQuestions.length - 1))}
                     disabled={slideIndex === filteredQuestions.length - 1}
-                    style={{ marginLeft: 12 }}
+                    style={{
+                      padding: "8px 18px",
+                      background: slideIndex === filteredQuestions.length - 1 ? "#e0e0e0" : "#6C63FF",
+                      color: slideIndex === filteredQuestions.length - 1 ? "#999" : "#fff",
+                      border: "none",
+                      borderRadius: 8,
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: slideIndex === filteredQuestions.length - 1 ? "not-allowed" : "pointer",
+                    }}
                   >
                     Next
                   </button>
                 </div>
-                <button style={{ marginTop: 16 }} onClick={() => setSlideshowActive(false)}>Exit Slideshow</button>
+                <button
+                  style={{
+                    marginTop: 28,
+                    padding: "8px 20px",
+                    background: "#6C63FF",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    fontWeight: 600,
+                    fontSize: 15,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setSlideshowActive(false)}
+                >
+                  Exit Slideshow
+                </button>
               </div>
             </div>
           );
